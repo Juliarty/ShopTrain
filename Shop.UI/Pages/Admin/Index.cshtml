@@ -4,32 +4,22 @@
 }
 
 <div id="app">
-    <input type="number" @@change="alert('hello')" v-model="price"/>
-    <button v-on:click="togglePrice">Toggle</button>
-    <button v-on:click="getProducts">Get products</button>
-    <p v-show="showPrice">
-        {{price}}
-    </p>
-    <p v-if="showPrice">
-        {{formatPrice}}
-    </p>
-</div>
+    <!-- <input type="number" @@change="alert('hello')" v-model="price" /> -->
 
-<div>
-
-    <p v-for="product in products">
-        {{product.name}}-{{product.description}}-{{product.value}}
+    <p v-for="(product, index) in products">
+        {{product.id}}: {{product.name}}-{{product.value}}
+        <button class="linkLike" @@click="editProduct(product.id, index)">Edit</button>
+        <button class="linkLike" @@click="deleteProduct(product.id, index)">Delete</button>
     </p>
 
+    <p>
+        <input v-model="productModel.name" />
+        <input v-model="productModel.description" />
+        <input v-model="productModel.value" />
+        <button @@click="createProduct" v-if="!productModel.id">Create product</button>
+        <button @@click="updateProduct" v-else>Update product</button>
+    </p>
 </div>
-
-<div>
-    <input v-model="productModel.name" />
-    <input v-model="productModel.description" />
-    <input v-model="productModel.value" />
-    <button @@click="createProduct"> Create product</button>
-</div>
-
 
 @section scripts{
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>

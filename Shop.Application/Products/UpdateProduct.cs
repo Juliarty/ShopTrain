@@ -1,32 +1,30 @@
 ﻿using Shop.Database;
-using Shop.Domain.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shop.Application.CreateProduct
+namespace Shop.Application.UpdateProduct
 {
-    public class CreateProduct
+    public class UpdateProduct
     {
         private ApplicationDbContext _context;
 
-        public CreateProduct(ApplicationDbContext context)
+        public UpdateProduct(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Response> Do(Request productViewModel)
-        {         
-            var product = new Product()
-            {
-                Name = productViewModel.Name,
-                Description = productViewModel.Description,
-                Value = Utils.GetDecimal(productViewModel.Value)
-            };
+        public async Task<Response> Do(Request request)
+        {
+            var product = _context.Products.ToList().FirstOrDefault(x => x.Id == request.Id);
 
-            _context.Products.Add(product);
+            product.Name = request.Name;
+            product.Description = request.Description;
+            product.Value = Utils.GetDecimal(request.Value);
 
             await _context.SaveChangesAsync();
+
             return new Response
             {
                 Id = product.Id,
@@ -35,11 +33,13 @@ namespace Shop.Application.CreateProduct
                 Value = product.Value.ToString()
             };
         }
-               
     }
+    
+
 
     public class Request
     {
+        public int Id { get; set; }
         [Required]
         [StringLength(30)]
         public string Name { get; set; }
@@ -53,13 +53,11 @@ namespace Shop.Application.CreateProduct
         public string Value { get; set; }
 
     }
-
     public class Response
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Value { get; set; }
-
     }
 }

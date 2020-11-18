@@ -1,11 +1,10 @@
-﻿using Shop.Application.ViewModels;
-using Shop.Database;
+﻿using Shop.Database;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shop.Application
+namespace Shop.Application.GetProduct
 {
     public class GetProduct
     {
@@ -16,15 +15,24 @@ namespace Shop.Application
             _context = context;
         }
 
-        public ProductViewModel Do(int id) =>
-            _context.Products.ToList().Where(x => x.Id == id).Select(x => new ProductViewModel
+        public Response Do(int id) =>
+            _context.Products.ToList().Where(x => x.Id == id).Select(x => new Response
             {
+                Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
-                Value = x.Value
+                Value = x.Value.ToString()
             }).FirstOrDefault();
 
     }
 
+
+    public class Response
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Value { get; set; }
+    }
 
 }

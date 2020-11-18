@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Shop.Application;
-using Shop.Application.ViewModels;
 using Shop.Database;
 
 namespace Shop.UI.Pages
@@ -17,9 +16,8 @@ namespace Shop.UI.Pages
         private ApplicationDbContext _context;
 
         [BindProperty]
-        public ProductViewModel Product { get; set; }
-
-        public IEnumerable<ProductViewModel> Products { get; set; }
+        public Application.CreateProduct.Request Product { get; set; }
+        public IEnumerable<Application.GetProducts.Response> Products { get; set; }
         public IndexModel(ILogger<IndexModel> logger, ApplicationDbContext context)
         {
             _logger = logger;
@@ -28,13 +26,18 @@ namespace Shop.UI.Pages
 
         public void OnGet()
         {
-            Products = new GetProducts(_context).Do();
+            Products = new Application.GetProducts.GetProducts(_context).Do();
         }
 
               
         public async Task<IActionResult> OnPost()
         {
-            await new CreateProduct(_context).Do(Product);
+            if (!ModelState.IsValid)
+            {
+                return RedirectToPage("Index");
+            }
+
+            await new Application.CreateProduct.CreateProduct(_context).Do(Product);
             return RedirectToPage("Index");
         }
       

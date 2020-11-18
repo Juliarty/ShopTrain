@@ -12,18 +12,22 @@
         <input asp-for="Product.Description" />
         <label>Value</label>
         <input asp-for="Product.Value" />
-        <input type="submit" value="Save product"/>
+        <span asp-validation-for="Product.Value" class="text-danger"></span>
+        <input type="submit" value="Save product" />
     </form>
 </div>
 
 <div>
-    @{ 
+    @{
         foreach (var p in Model.Products)
         {
             <p>
-                @p.Name - @p.Description - @p.Value
+                @p.Name - @p.Value
             </p>
         }
     }
 
 </div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
