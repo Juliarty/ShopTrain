@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Shop.UI</title>
     <environment include="Development">
-        <link rel="stylesheet" href="~/css/site.css" />
         <link href="~/lib/bulma-0.9.1/css/bulma.css" rel="stylesheet" />
     </environment>
     <environment include="Production">
-        <link rel="stylesheet" href="~/css/site.css" />
         <link href="~/lib/bulma-0.9.1/css/bulma.min.css" rel="stylesheet" />
     </environment>
 </head>
@@ -32,10 +30,8 @@
 
     
     <environment include="Development">
-        <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment include="Production">
-        <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     @RenderSection("Scripts", required: false)
 </body>
