@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Shop.Application.CreateProduct
+namespace Shop.Application
 {
     public class CreateProduct
     {
@@ -35,31 +35,33 @@ namespace Shop.Application.CreateProduct
                 Value = product.Value.ToString()
             };
         }
-               
+
+        public class Request
+        {
+            [Required]
+            [StringLength(30)]
+            public string Name { get; set; }
+            [Required]
+            [StringLength(130)]
+            public string Description { get; set; }
+
+            [RegularExpression(@"\d+([,\.]\d+)?", ErrorMessage = "This price fromat is not supported.")]
+            [Required]
+            [StringLength(30)]
+            public string Value { get; set; }
+
+        }
+
+        public class Response
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string Value { get; set; }
+
+        }
+
     }
 
-    public class Request
-    {
-        [Required]
-        [StringLength(30)]
-        public string Name { get; set; }
-        [Required]
-        [StringLength(130)]
-        public string Description { get; set; }
-
-        [RegularExpression(@"\d+([,\.]\d+)?", ErrorMessage = "This price fromat is not supported.")]
-        [Required]
-        [StringLength(30)]
-        public string Value { get; set; }
-
-    }
-
-    public class Response
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Value { get; set; }
-
-    }
+ 
 }

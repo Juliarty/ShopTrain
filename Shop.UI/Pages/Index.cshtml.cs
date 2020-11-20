@@ -16,8 +16,8 @@ namespace Shop.UI.Pages
         private ApplicationDbContext _context;
 
         [BindProperty]
-        public Application.CreateProduct.Request Product { get; set; }
-        public IEnumerable<Application.GetProducts.Response> Products { get; set; }
+        public CreateProduct.Request Product { get; set; }
+        public IEnumerable<GetProducts.Response> Products { get; set; }
         public IndexModel(ILogger<IndexModel> logger, ApplicationDbContext context)
         {
             _logger = logger;
@@ -26,7 +26,7 @@ namespace Shop.UI.Pages
 
         public void OnGet()
         {
-            Products = new Application.GetProducts.GetProducts(_context).Do();
+            Products = new GetProducts(_context).Do();
         }
 
               
@@ -37,7 +37,7 @@ namespace Shop.UI.Pages
                 return RedirectToPage("Index");
             }
 
-            await new Application.CreateProduct.CreateProduct(_context).Do(Product);
+            await new CreateProduct(_context).Do(Product);
             return RedirectToPage("Index");
         }
       

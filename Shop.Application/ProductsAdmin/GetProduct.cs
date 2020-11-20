@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shop.Application.GetProduct
+namespace Shop.Application
 {
     public class GetProduct
     {
@@ -23,16 +23,16 @@ namespace Shop.Application.GetProduct
                 Description = x.Description,
                 Value = x.Value.ToString()
             }).FirstOrDefault();
-
+        public class Response
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string Value { get; set; }
+        }
     }
 
 
-    public class Response
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Value { get; set; }
-    }
+ 
 
 }

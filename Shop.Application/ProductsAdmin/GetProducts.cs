@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Shop.Application.GetProducts
+namespace Shop.Application
 {
     public class GetProducts
     {
@@ -23,12 +23,13 @@ namespace Shop.Application.GetProducts
                 Name = x.Name,
                 Value = x.Value.ToString()
             });
+
+        public class Response
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
     }
 
-    public class Response
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
 }

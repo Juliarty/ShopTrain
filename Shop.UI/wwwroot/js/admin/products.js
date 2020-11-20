@@ -1,7 +1,6 @@
 ﻿var app = new Vue({
     el: "#app",
     data: {
-
         loading: false,
         editing: false,
         products: [],
@@ -111,8 +110,6 @@
         }
     },
     computed: {
-        formatPrice: function () {
-            return "\u20bd" + this.price;
-        }
     }
 });
+

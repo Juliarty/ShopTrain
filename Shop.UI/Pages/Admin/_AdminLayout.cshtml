@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <h3 class="has-text-centered">Admin Panel</h3>
+    <h1 class="title has-text-centered">Admin Panel: @ViewData["Title"]</h1>
     <div class="container">
         <!-- <input type="number" @@change="alert('hello')" v-model="price" /> -->
         <div class="columns">
@@ -44,11 +44,9 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-    <environment include="Development">
-    </environment>
-    <environment include="Production">
-    </environment>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

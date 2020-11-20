@@ -3,4 +3,59 @@
 @{
 }
 
-<h3>Stock</h3>
+<div id="app" class="container">
+    <div class="columns">
+        <div class="column is-3">
+            <table class="table">
+                <tr>
+                    <th>
+                        Product Name
+                    </th>
+                </tr>
+                <tr v-for="(product, index) in products">
+                    <td @@click="selectProduct(product)">
+                        {{product.name}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="column is-6" v-if="selectedProduct">
+            <table class="table">
+                <tr v-for="(stock, index) in selectedProduct.stock">
+                    <td>
+                        <input class="input" v-model="stock.description" />
+                    </td>
+                    <td>
+                        <input class="input" v-model.number="stock.qty" />
+                    </td>
+                    <td>
+                        <a class="has-text-danger" @@click="deleteStock(stock, index)">Delete</a>
+                    </td>
+                </tr>
+            </table>
+            <button class="button is-warning" @@click="updateStock">Update stock</button>
+        </div>
+        <div class="column is-3">
+            <h2 class="title">New Stock</h2>
+            <div class="field">
+                <label class="label">Description</label>
+                <div class="conrol">
+                    <input class="input" v-model="newStock.description" />
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Qty</label>
+                <div class="conrol">
+                    <input class="input" v-model.number="newStock.qty" />
+                </div>
+            </div>
+
+            <button class="button is-success" @@click="addStock">Add</button>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script src="~/js/admin/stock.js"></script>
+}
