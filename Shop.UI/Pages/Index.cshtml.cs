@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Shop.Application;
+using Shop.Application.ProductsAdmin;
 using Shop.Database;
 
 namespace Shop.UI.Pages
@@ -30,16 +30,16 @@ namespace Shop.UI.Pages
         }
 
               
-        public async Task<IActionResult> OnPost()
-        {
-            if (!ModelState.IsValid)
-            {
-                return RedirectToPage("Index");
-            }
+        //public async Task<IActionResult> OnPost()
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return RedirectToPage("Index");
+        //    }
 
-            await new CreateProduct(_context).Do(Product);
-            return RedirectToPage("Index");
-        }
+        //    await new CreateProduct(_context).Do(Product);
+        //    return RedirectToPage("Index");
+        //}
       
     }
 }

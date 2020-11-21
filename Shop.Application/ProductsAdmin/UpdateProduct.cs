@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shop.Application
+namespace Shop.Application.ProductsAdmin
 {
     public class UpdateProduct
     {
@@ -58,7 +58,7 @@ namespace Shop.Application
             public string Value { get; set; }
         }
     }
-    
+
 
 
 

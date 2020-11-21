@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Shop.Application
+namespace Shop.Application.ProductsAdmin
 {
     public class GetProducts
     {

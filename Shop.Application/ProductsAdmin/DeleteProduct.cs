@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shop.Application
+namespace Shop.Application.ProductsAdmin
 {
     public class DeleteProduct
     {

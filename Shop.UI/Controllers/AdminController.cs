@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shop.Application;
+using Shop.Application.ProductsAdmin;
 using Shop.Application.StockAdmin;
 using Shop.Database;
 using System;

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<div>
+@*@<div>
     <form method="post">
         <label>Name</label>
         <input asp-for="Product.Name" />
@@ -15,19 +15,23 @@
         <span asp-validation-for="Product.Value" class="text-danger"></span>
         <input type="submit" value="Save product" />
     </form>
-</div>
+</div>*@
 
 <div>
     @{
         foreach (var p in Model.Products)
         {
-            <p>
+        <p>
+            <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
                 @p.Name - @p.Value
-            </p>
+            </a>
+        </p>
         }
     }
-
 </div>
+
+
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

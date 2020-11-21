@@ -1,0 +1,19 @@
+﻿@page "{name}"
+@model Shop.UI.Pages.ProductModel
+@{
+    ViewData["Title"] = "Product";
+}
+<a asp-page="Index"> Go to Main</a>
+<div>
+    <p>@Model.Product.Name</p>
+    <p>@Model.Product.Description</p>
+    <p>@Model.Product.Value</p>
+    <label class="label">Stock</label>
+    <select>
+        @foreach (var s in Model.Product.Stock)
+        {
+            <option value="@s.Id">@s.Description</option>
+        }
+    </select>
+
+</div>

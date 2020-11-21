@@ -11,7 +11,6 @@ namespace Shop.UI.Pages.Admin
     {
         public void OnGet()
         {
-            ViewData["Title"] = "Products";
         }
     }
 }

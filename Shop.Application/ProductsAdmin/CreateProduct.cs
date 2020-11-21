@@ -4,7 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Shop.Application
+namespace Shop.Application.ProductsAdmin
 {
     public class CreateProduct
     {
@@ -16,7 +16,7 @@ namespace Shop.Application
         }
 
         public async Task<Response> Do(Request productViewModel)
-        {         
+        {
             var product = new Product()
             {
                 Name = productViewModel.Name,
@@ -63,5 +63,5 @@ namespace Shop.Application
 
     }
 
- 
+
 }
