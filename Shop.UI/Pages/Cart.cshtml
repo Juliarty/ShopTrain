@@ -1,0 +1,17 @@
+﻿@page
+@model Shop.UI.Pages.CartModel
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<div>
+    @foreach (var cart in Model.Cart)
+        {
+            <p>@cart.Name</p>
+            <p>@cart.Value</p>
+            <p>@cart.Qty</p>
+            <p>@cart.StockId</p>
+            <hr />
+        }
+     
+</div>
