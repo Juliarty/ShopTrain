@@ -25,7 +25,14 @@ namespace Shop.Application.Cart
         public IEnumerable<Response> Do()
         {
             // TODO: account for multiple items in the cart
-            var cartList = JsonConvert.DeserializeObject<IEnumerable<CartProduct>>(_session.GetString("cart"));
+
+            var stringObject = _session.GetString("cart");
+            if (string.IsNullOrEmpty(stringObject))
+            {
+                return Enumerable.Empty<Response>();
+            }
+
+            var cartList = JsonConvert.DeserializeObject<List<Response>>(stringObject);
             var responseList = new List<Response>();
             
             var response = _ctx.Stock

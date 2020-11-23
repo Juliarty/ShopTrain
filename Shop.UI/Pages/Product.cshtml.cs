@@ -33,6 +33,7 @@ namespace Shop.UI.Pages
             //var currentId = HttpContext.Session.GetString("id");
             //HttpContext.Session.SetString("id", "");
 
+            //ToDo: check whether any stock was selected
             new AddToCart(HttpContext.Session).Do(CartViewModel);
 
             return RedirectToPage("Cart");
