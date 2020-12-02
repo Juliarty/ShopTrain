@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Shop.Database;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace Shop.UI
 {
@@ -39,7 +40,7 @@ namespace Shop.UI
             });
             services.AddRazorPages().AddXmlSerializerFormatters(); ;
             services.AddDbContext<ApplicationDbContext>((options) => options.UseSqlServer(Configuration["DefaultConnection"]));
-
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +73,8 @@ namespace Shop.UI
 
             //Todo: look at GDPR
             app.UseCookiePolicy();
+
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
 
         }
     }
