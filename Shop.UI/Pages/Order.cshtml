@@ -1,0 +1,37 @@
+﻿@page "{reference}"
+@model Shop.UI.Pages.OrderModel
+@{
+}
+
+
+<div>
+
+    <h3 class="header"> Order № @Model.Order.OrderRef</h3>
+
+    <table class="table">
+        <tr class="row">
+            <td> Name</td>
+            <td> Description</td>
+            <td> Stock Description</td>
+            <td> Qty</td>
+            <td> Value</td>
+        </tr>
+        @foreach (var product in Model.Order.Products)
+        {
+            <tr class="row">
+                <td> @product.Name</td>
+                <td> @product.Description</td>
+                <td> @product.StockDescription</td>
+                <td> @product.Qty</td>
+                <td> @product.Value &times; @product.Qty = @product.OverallValue</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        <td class="header">
+            Total Price: @Model.Order.TotalValue
+        </td>
+        </tr>
+    </table>
+
+</div>

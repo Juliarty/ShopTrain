@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shop.Database;
 
 namespace Shop.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201205164339_Changed-CustomInfo-Set-String-For-City_PostCode")]
+    partial class ChangedCustomInfoSetStringForCity_PostCode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,10 +267,15 @@ namespace Shop.Database.Migrations
                     b.Property<int>("StockId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Qty")
                         .HasColumnType("int");
 
                     b.HasKey("OrderId", "StockId");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("StockId");
 
@@ -378,8 +385,12 @@ namespace Shop.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shop.Domain.Models.Stock", "Stock")
+                    b.HasOne("Shop.Domain.Models.Product", null)
                         .WithMany("OrderStocks")
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("Shop.Domain.Models.Stock", "Stock")
+                        .WithMany("OrderProducts")
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

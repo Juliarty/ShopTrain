@@ -33,13 +33,19 @@ namespace Shop.UI
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
             });
-            services.AddSession(options =>
-            {
-                options.Cookie.Name = "Cart";
-                options.Cookie.MaxAge = TimeSpan.FromDays(365);
-            });
-            services.AddRazorPages().AddXmlSerializerFormatters(); ;
+
             services.AddDbContext<ApplicationDbContext>((options) => options.UseSqlServer(Configuration["DefaultConnection"]));
+            services.AddSession();
+            services.AddAntiforgery(options =>
+            {
+                // Set Cookie properties using CookieBuilder properties†.
+                options.Cookie.Name = "LOL";
+                options.FormFieldName = "AntiforgeryFieldname";
+                options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
+                options.SuppressXFrameOptionsHeader = false;
+            });
+
+            services.AddRazorPages().AddXmlSerializerFormatters(); ;
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
         }
 

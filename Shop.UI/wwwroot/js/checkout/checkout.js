@@ -2,23 +2,15 @@
     el: "#app",
     data: {
         loading: false,
-        newStock: {
-            productId: 0,
-            description: "Size",
-            qty: 10
-        },
-        selectedProduct: null,
-        products: null
-    },
-    mounted() {
-        this.getStock();
     },
     methods: {
-        createSession(stripe) {
-            axios.post("/Payment")
-                .then(x => x.json())
+        createSession() {
+            axios.post("/Checkout/Payment/create-session")
+                .then(response => {
+                    return response.json();
+                })
                 .then(session => {
-                    stripe.redirectToCheckout({ sessionId: session.id })
+                    return stripe.redirectToCheckout({ sessionId: session.id });
                 })
                 .then(result => {
                     // If redirectToCheckout fails due to a browser or network
@@ -28,9 +20,7 @@
                         alert(result.error.message);
                     }
                 })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
+                .catch(error => {console.error("Error:", error);});
         }
     }
 });

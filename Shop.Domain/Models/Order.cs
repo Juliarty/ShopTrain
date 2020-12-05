@@ -8,6 +8,7 @@ namespace Shop.Domain.Models
     {
         public int Id{ get; set; }
         public string OrderRef { get; set; }
+        public string StripeRef { get; set; }
 
         public string FirstName{ get; set; }
         public string LastName{ get; set; }
@@ -15,9 +16,9 @@ namespace Shop.Domain.Models
         public string PhoneNumber{ get; set; }
         public string Address1{ get; set; }
         public string Address2{ get; set; }
-        public int City{ get; set; }
-        public int PostCode{ get; set; }
+        public string City{ get; set; }
+        public string PostCode{ get; set; }
 
-        public ICollection<OrderProduct> OrderProducts { get; set; }
+        public ICollection<OrderStock> OrderStocks { get; set; }
     }
 }
