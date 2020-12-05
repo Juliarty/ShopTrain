@@ -45,6 +45,7 @@ namespace Shop.UI.Checkout
         {
             var cartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
 
+
             await new CreateOrder(_ctx).Do(new CreateOrder.Request()
             {
                 StripeReference = "Charge.Id",

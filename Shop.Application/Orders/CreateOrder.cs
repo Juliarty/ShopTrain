@@ -19,6 +19,16 @@ namespace Shop.Application.Orders
 
         public async Task<bool> Do(Request request)
         {
+            var stockIds = request.Stocks.Select(x => x.StockId).ToList();
+
+            var stockToUpdate = _ctx.Stock.Where(x => stockIds.Contains(x.Id)).ToList();
+
+            foreach (var stock in stockToUpdate)
+            {
+                stock.Qty -= request.Stocks.Where(x => x.StockId == stock.Id).FirstOrDefault().Qty;
+            }
+
+
             var order = new Order()
             {
                 OrderRef = CreateOrderReference(),

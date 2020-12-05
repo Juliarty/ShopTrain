@@ -65,7 +65,6 @@ namespace Shop.Application.Cart
         {
             public IEnumerable<Product> Products { get; set; }
             public CustomerInformation CustomerInformation { get; set; }
-
             public int GetTotalCharge() => Products.Sum(x => x.Value * x.Qty);
         }
 
