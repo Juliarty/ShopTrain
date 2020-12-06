@@ -21,13 +21,9 @@ namespace Shop.Application.Orders
         {
             var stockIds = request.Stocks.Select(x => x.StockId).ToList();
 
-            var stockToUpdate = _ctx.Stock.Where(x => stockIds.Contains(x.Id)).ToList();
+            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == request.SessionId).ToList();
 
-            foreach (var stock in stockToUpdate)
-            {
-                stock.Qty -= request.Stocks.Where(x => x.StockId == stock.Id).FirstOrDefault().Qty;
-            }
-
+            _ctx.StocksOnHold.RemoveRange(stockOnHold);
 
             var order = new Order()
             {
@@ -73,6 +69,7 @@ namespace Shop.Application.Orders
         public class Request
         {
             public string StripeReference { get; set; }
+            public string SessionId { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Email { get; set; }

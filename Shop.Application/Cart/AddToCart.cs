@@ -7,20 +7,50 @@ using System.Text;
 using Newtonsoft.Json;
 using Shop.Domain.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shop.Application.Cart
 {
     public class AddToCart
     {
+        private ApplicationDbContext _ctx;
         private ISession _session;
 
-        public AddToCart(ISession session)
+        public AddToCart(ApplicationDbContext ctx, ISession session)
         {
+            _ctx = ctx;
             _session = session;
         }
 
-        public void Do(Request request)
+        public async Task<bool> Do(Request request)
         {
+
+            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id);
+            var stockToHold = _ctx.Stock.FirstOrDefault(x => x.Id == request.StockId);
+
+            if(stockToHold.Qty < request.Qty)
+            {
+                return false;
+            }
+
+            _ctx.StocksOnHold.Add(new StocksOnHold()
+            {
+                StockId = request.StockId,
+                SessionId = _session.Id,
+                Qty = request.Qty,
+                ExpiryTime = DateTime.Now.AddMinutes(20)
+            });
+
+            stockToHold.Qty -= request.Qty;
+
+            foreach (var stock in stocksOnHold)
+            {
+                stock.ExpiryTime = DateTime.Now.AddMinutes(20);
+                //ToDo: extend cookie expiring time, or just keep it for session time... no.. it's not so convenient
+            }
+
+            await _ctx.SaveChangesAsync();
+
             var cartList = new List<CartProduct>();
             var stringObject = _session.GetString("cart");
             if(!string.IsNullOrEmpty(stringObject))
@@ -44,6 +74,8 @@ namespace Shop.Application.Cart
             stringObject = JsonConvert.SerializeObject(cartList);
 
             _session.SetString("cart", stringObject);
+
+            return true;
         }
 
         public class Request

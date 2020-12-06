@@ -24,19 +24,22 @@ namespace Shop.UI.Pages
 
         public GetProduct.Response Product { get; set; }
 
-        public void OnGet(string name)
+        public async Task OnGetAsync(string name)
         {
-            Product = new GetProduct(_ctx).Do(name.Replace("-", " "));
+            Product = await new GetProduct(_ctx).Do(name.Replace("-", " "));
         }
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             //var currentId = HttpContext.Session.GetString("id");
             //HttpContext.Session.SetString("id", "");
 
             //ToDo: check whether any stock was selected
-            new AddToCart(HttpContext.Session).Do(CartViewModel);
-
-            return RedirectToPage("Cart");
+            var stockAddedToCart = await new AddToCart(_ctx, HttpContext.Session).Do(CartViewModel);
+            if (stockAddedToCart)
+                return RedirectToPage("Cart");
+            else
+                //ToDo: Redirect to warning
+                return Page();
         }
     }
 }

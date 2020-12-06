@@ -49,6 +49,7 @@ namespace Shop.UI.Checkout
             await new CreateOrder(_ctx).Do(new CreateOrder.Request()
             {
                 StripeReference = "Charge.Id",
+                SessionId = HttpContext.Session.Id,
                 FirstName = cartOrder.CustomerInformation.FirstName,
                 LastName = cartOrder.CustomerInformation.LastName,
                 Email = cartOrder.CustomerInformation.Email,
@@ -59,7 +60,7 @@ namespace Shop.UI.Checkout
                 PostCode = cartOrder.CustomerInformation.PostCode,
                 Stocks = cartOrder.Products.Select(x => new CreateOrder.Stock() { StockId = x.StockId, Qty = x.Qty}).ToList()
                 
-            });;
+            });
 
             return RedirectToPage("/Index");
         }
