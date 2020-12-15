@@ -1,0 +1,14 @@
+﻿@page
+@model Shop.UI.Pages.Accounts.LoginModel
+@{
+}
+
+
+<div class="container">
+
+    <form method="post">
+        <input asp-for="@Model.Input.UserName" />
+        <input asp-for="@Model.Input.Password" />
+        <input type="submit" class="button" value="Sign In"/>
+    </form>
+</div>

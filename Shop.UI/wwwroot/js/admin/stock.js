@@ -21,7 +21,7 @@
         },
         getStock() {
             this.loading = true;
-            axios.get("/Admin/stocks")
+            axios.get("/stocks")
                 .then(res => {
                     console.log(res.data);
                     this.products = res.data;
@@ -35,7 +35,7 @@
         },
         addStock() {
             this.loading = true;
-            axios.post("/Admin/stocks", this.newStock)
+            axios.post("/stocks", this.newStock)
                 .then(res => {
                     console.log(res);
                     this.selectedProduct.stock.push(res.data);
@@ -61,7 +61,7 @@
                 };
             });
             var requestData = { stock: stock };
-            axios.put("/Admin/stocks/", requestData)
+            axios.put("/stocks/", requestData)
                 .then(res => {
                     console.log(res.data);
                     updatedProduct.stock = res.data.stock;
@@ -75,7 +75,7 @@
         },
         deleteStock(stock, index) {
             var currentProduct = this.selectedProduct;
-            axios.delete("/Admin/stocks/" + stock.id)
+            axios.delete("/stocks/" + stock.id)
                 .then(res => {
                     console.log(res);
                     currentProduct.stock.splice(index, 1);

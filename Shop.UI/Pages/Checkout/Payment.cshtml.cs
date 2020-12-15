@@ -48,6 +48,7 @@ namespace Shop.UI.Checkout
 
             await new CreateOrder(_ctx).Do(new CreateOrder.Request()
             {
+                //ToDo: change stripeReference
                 StripeReference = "Charge.Id",
                 SessionId = HttpContext.Session.Id,
                 FirstName = cartOrder.CustomerInformation.FirstName,

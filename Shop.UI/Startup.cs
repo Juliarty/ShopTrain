@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore.SqlServer;
 using Shop.Database;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
+using Microsoft.AspNetCore.Identity;
+using Shop.Application.Users;
 
 namespace Shop.UI
 {
@@ -35,6 +37,37 @@ namespace Shop.UI
             });
 
             services.AddDbContext<ApplicationDbContext>((options) => options.UseSqlServer(Configuration["DefaultConnection"]));
+            
+            // AddDefaultIdentity adds a bunch of pre-built stuff (boilerplates) like LoginPartial.cshtml and the like
+            services.AddIdentity<IdentityUser, IdentityRole>(
+                options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.DefaultLockoutTimeSpan = new TimeSpan(0, 30, 0);
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>();         ///Wow!
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Accounts/Login/";
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "Admin"));
+                // options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "Manager"));
+                options.AddPolicy("Manager", 
+                    policy => policy
+                    .RequireAssertion(context => 
+                    context.User.HasClaim(x => x.Value == "Admin") || 
+                    context.User.HasClaim(x => x.Value == "Manager")));
+            });
+
             services.AddSession();
             services.AddAntiforgery(options =>
             {
@@ -45,8 +78,16 @@ namespace Shop.UI
                 options.SuppressXFrameOptionsHeader = false;
             });
 
-            services.AddRazorPages().AddXmlSerializerFormatters(); ;
+            services.AddRazorPages()
+                .AddXmlSerializerFormatters()
+                .AddRazorPagesOptions(options => 
+                {
+                    options.Conventions.AuthorizeFolder("/Admin");
+                    options.Conventions.AuthorizePage("/Admin/ConfigureUsers", "Admin");
+                });
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
+            services.AddTransient<CreateUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +109,7 @@ namespace Shop.UI
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSession();
@@ -75,8 +117,8 @@ namespace Shop.UI
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
-
             //Todo: look at GDPR
             app.UseCookiePolicy();
 

@@ -14,8 +14,11 @@
 <body>
     <header>
         <a asp-page="/Admin/Index">Admin</a>
-        <a asp-page="/Checkout/CustomerInformation">Admin</a>
+        <a asp-page="/Checkout/CustomerInformation">Customer Information</a>
         <a asp-page="/Checkout/Payment">Payment</a>
+        <a asp-page="/Accounts/Login">Sign In</a>
+        <a asp-controller="Account" asp-action="LogOut">Sign Out</a>
+
     </header>
 
     <div class="container">

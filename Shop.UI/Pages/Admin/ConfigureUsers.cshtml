@@ -1,0 +1,13 @@
+﻿@page
+@model Shop.UI.Pages.Admin.ConfigureUserModel
+@{
+}
+<div id="app" class="container">
+    <input v-model="username" />
+    <button class="button is-success" @@click="createUser">Create</button>
+</div>
+
+
+@section scripts{
+    <script src="~/js/admin/user.js"></script>
+}
