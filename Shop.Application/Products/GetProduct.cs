@@ -39,7 +39,7 @@ namespace Shop.Application.Products
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    Value = $"${x.Value:N2}",
+                    ValueInRubles = x.Value,
                     Stock = x.Stock.Select(y => new StockViewModel
                     {
                         Id = y.Id,
@@ -53,7 +53,8 @@ namespace Shop.Application.Products
             public int Id { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
-            public string Value { get; set; }
+            public decimal ValueInRubles { get; set; }
+            public string ValueStrRubles { get => $"\x20bd{ValueInRubles}"; }
             public IEnumerable<StockViewModel> Stock { get; set; }
         }
 

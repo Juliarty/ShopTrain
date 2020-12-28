@@ -19,6 +19,8 @@ namespace Shop.UI.Checkout
 
         private ApplicationDbContext _ctx;
 
+        [BindProperty]
+        public Application.Cart.GetOrder.Response CartOrder { get; set; }
         public PaymentModel(IConfiguration config, ApplicationDbContext context)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
@@ -35,8 +37,7 @@ namespace Shop.UI.Checkout
                 return RedirectToPage("/Checkout/CustomerInformation");
             }
 
-            var cartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
-
+            CartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
 
             return Page();
         }

@@ -1,12 +1,13 @@
 ﻿@model IEnumerable<Shop.Application.Cart.GetCart.Response>
-
-<div>
-    <h2 class="header">Small Cart</h2>
-    @foreach(var product in Model)
-    { 
-        <p>@product.Name</p>
-        <p>@product.Value</p>
-        <p>@product.Qty</p>
-        <p>@product.StockId</p>
-    }
+<div class="field is-grouped">
+    <p class="control">
+        <a class="button is-warning" asp-page="/Cart">
+            <span class="icon">
+                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+            </span>
+            <span>
+               @Shop.Application.Utils.GetRubles(Model.Sum(x => x.ValueInRubles * x.Qty))
+            </span>
+        </a>
+    </p>
 </div>

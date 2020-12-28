@@ -21,14 +21,17 @@ namespace Shop.Application.ProductsAdmin
             {
                 Id = x.Id,
                 Name = x.Name,
-                Value = x.Value.ToString()
+                Description = x.Description,
+                ValueInRubles = x.Value
             });
 
         public class Response
         {
             public int Id { get; set; }
             public string Name { get; set; }
-            public string Value { get; set; }
+            public string Description { get; set; }
+            public decimal ValueInRubles { get; set; }
+            public string ValueStrRubles { get => $"\x20bd{ValueInRubles}"; }
         }
     }
 

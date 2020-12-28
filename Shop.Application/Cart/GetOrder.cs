@@ -23,8 +23,6 @@ namespace Shop.Application.Cart
 
         public Response Do()
         {
-
-
             var cart = _session.GetString("cart");
 
             var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(cart);
@@ -37,7 +35,7 @@ namespace Shop.Application.Cart
                 {
                     ProductId = x.ProductId,
                     StockId = x.Id,
-                    Value = (int) (x.Product.Value * 100), // Do not lose cents!
+                    Value = x.Product.Value, // Do not lose cents!
                     Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
                 }).ToList();
 
@@ -65,7 +63,8 @@ namespace Shop.Application.Cart
         {
             public IEnumerable<Product> Products { get; set; }
             public CustomerInformation CustomerInformation { get; set; }
-            public int GetTotalCharge() => Products.Sum(x => x.Value * x.Qty);
+            public string TotalChargeStrRubles => $"\x20BD{GetTotalCharge()}";
+            public decimal GetTotalCharge() => Products.Sum(x => x.Value * x.Qty);
         }
 
 
@@ -74,7 +73,7 @@ namespace Shop.Application.Cart
             public int ProductId { get; set; }
             public int Qty { get; set; }
             public int StockId { get; set; }
-            public int Value { get; set; }
+            public decimal Value { get; set; }
 
         }
         public class CustomerInformation

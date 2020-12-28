@@ -1,12 +1,32 @@
 ﻿@model IEnumerable<Shop.Application.Cart.GetCart.Response>
 
+
 <div>
-    <h2 class="header">Big Cart</h2>
-    @foreach(var product in Model)
-    { 
-        <p>@product.Name</p>
-        <p>@product.Value</p>
-        <p>@product.Qty</p>
-        <p>@product.StockId</p>
-    }
+    <p class="title has-text-centered">Cart</p>
+    
+        @foreach (var product in Model)
+        {
+        <article class="media">
+                <figure class="media-left">
+                    <p class="image is-64x64">
+                        <img src="~/images/snickers.webp" />
+                    </p>
+                </figure>
+                <div class="media-content">
+                    <div class="content">
+                        <p class="title">@product.Name</p>
+                        
+                        <div class="level">
+                            <div class="level-item">Qty: @product.Qty</div>
+                            <div class="level-item">Size: @product.StockId</div>
+                            <div class="level-item">Price: @product.ValueStrRubles</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="media-right">
+                    <button class="delete"></button>
+                </div>
+            </article>
+        }
+
 </div>

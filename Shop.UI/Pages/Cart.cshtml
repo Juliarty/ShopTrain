@@ -4,15 +4,62 @@
     ViewData["Title"] = "Cart";
 }
 
-<div>
-    @foreach (var cart in Model.Cart)
-        {
-            <p>@cart.Name</p>
-            <p>@cart.Value</p>
-            <p>@cart.Qty</p>
-            <p>@cart.StockId</p>
-            <hr />
-        }
+<div class="container">
+    <div class="columns">
+        <div class="column is-6 is-offset-1">
+
+                @foreach (var cart in Model.Cart)
+                {
+                    <div class="level">
+                        <div class="level-item">
+                            <figure class="image is-128x128">
+                                <img src="~/images/snickers.webp" />
+                            </figure>
+                        </div>
+                        <div class="level-item">
+                            <div class="title">
+                                @cart.Name
+                            </div>
+                        </div>
+                        <div class="level-item">
+                            <p>@cart.ValueStrRubles</p>
+                        </div>
+                        <div class="level-item">
+                            <p>@cart.Qty</p>
+                        </div>
+                    </div>
+                }
+
+        </div>
+    </div>
+
+    <div class="has-text-right">
+        <div class="level-right">
+            <p class="level-item">
+                    <a class="button is-italic" asp-page="\Index">
+                    
+                        <span class="icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </span>
+                    
+                        <span>
+                            Back To Shop
+                        </span> 
+                    
+                    </a>
+            </p>
+
+            <p class="level-item">
+                <a class="button is-success" asp-page="\Checkout\Payment">
+                    <span>
+                        Checkout
+                    </span>
+
+                </a>
+            </p>
+
+        </div>
+    </div>
      
-    @await Component.InvokeAsync("Cart", new { componentName = "Small"})
+    @*@await Component.InvokeAsync("Cart", new { componentName = "Small"})*@
 </div>

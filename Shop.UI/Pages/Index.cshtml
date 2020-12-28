@@ -3,41 +3,45 @@
 @{
     ViewData["Title"] = "Home page";
 }
-
-@*@<div>
-        <form method="post">
-            <label>Name</label>
-            <input asp-for="Product.Name" />
-            <label>Description</label>
-            <input asp-for="Product.Description" />
-            <label>Value</label>
-            <input asp-for="Product.Value" />
-            <span asp-validation-for="Product.Value" class="text-danger"></span>
-            <input type="submit" value="Save product" />
-        </form>
-    </div>*@
-
-
-<div>
-    <form method="post">
-        <input type="submit" value="Save product" />
-    </form>
-</div>
-
-<div>
+<div class="section">
+    <div class="columns is-multiline is-mobile">
     @{
-        foreach (var p in Model.Products)
+        for (int i = 0; i < 5; i++)
         {
-            <p>
-                <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
-                    @p.Name - @p.Value
-                </a>
-            </p>
+
+            foreach (var p in Model.Products)
+            {
+                <div class="column is-3-desktop is-4-tablet is-6-mobile">
+                    <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
+
+                        <div class="card" >
+                            <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        <img src="~/images/snickers.webp" />""
+                                    </figure>
+                            </div>
+                            <div class="card-content">
+                                <p class="title is-size-6">
+                                    @p.Name @p.ValueStrRubles
+                                </p>
+                                <p class="subtitle">
+                                    @p.Description
+                                </p>
+
+                                <div class="content">
+                
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
         }
     }
+    </div>
+
+
 </div>
-
-
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

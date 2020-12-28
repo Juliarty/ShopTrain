@@ -3,25 +3,77 @@
 @{
     ViewData["Title"] = "Product";
 }
-<a asp-page="Index"> Go to Main</a>
 
-<div>
-    <p>@Model.Product.Name</p>
-    <p>@Model.Product.Description</p>
-    <p>@Model.Product.Value</p>
-    <div>
-        <form method="post">
-            <label class="label">Stock</label>
-            <select asp-for="CartViewModel.StockId">
-                @foreach (var s in Model.Product.Stock)
-                {
-                    <option value="@s.Id">@s.Description</option>
-                }
-            </select>
-            <label>Qty: </label>
-            <input asp-for="CartViewModel.Qty" />
-            <button type="submit">Submit</button>
-        </form>
+<section class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-6">
+                    <figure>
+                        <img src="~/images/snickers.webp" />
+                    </figure>
+                   
+                </div>
+                
+                <div class="column is-6">
+                    <h1 class="title">
+                        @Model.Product.Name @Model.Product.ValueStrRubles
+                    </h1>
+                    <h2 class="subtitle">
+                        @Model.Product.Description
+                    </h2>
+
+                    <p>
+                        LOREM Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
+                    </p>
+
+                    <form method="post">
+
+                        <div class="field is-horizontal">
+                            <div class="field-label is-normal">
+                                <label class="label">Size</label>
+                            </div>
+                            <div class="field-body">
+                                <div class="control">
+                                    <div class="select">
+                                        <select asp-for="CartViewModel.StockId">
+                                            @foreach (var s in Model.Product.Stock)
+                                            {
+                                                <option value="@s.Id">@s.Description</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field is-horizontal">
+                            <div class="field-label is-normal">
+                                <label class="label">Qty: </label>
+                            </div>
+                            <div class="field-body">
+                                <div class="control">
+                                    <input class="input" asp-for="CartViewModel.Qty" value="1" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field is-horizontal">
+                            <div class="field-label is-normal">
+                                <label class="label"></label>
+                            </div>
+                            <div class="field-body">
+                                <div class="control">
+                                    <button class="button is-primary" type="submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+
+                      
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-   <vc:cart component-name="Default"></vc:cart>
-</div>
+</section>

@@ -42,7 +42,7 @@ namespace Shop.Application.Cart
             .Select(x => new Response()
             {
                 Name = x.Product.Name,
-                Value = $"$ {x.Product.Value:N2}",
+                ValueInRubles = x.Product.Value,
                 StockId = x.Id,
                 Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
             })
@@ -54,7 +54,8 @@ namespace Shop.Application.Cart
         public class Response
         {
             public string Name { get; set; }
-            public string Value { get; set; }
+            public decimal ValueInRubles { get; set; }
+            public string ValueStrRubles { get => $"\x20BD{ValueInRubles:N2}"; }
             public int Qty { get; set; }
             public int StockId { get; set; }
             
