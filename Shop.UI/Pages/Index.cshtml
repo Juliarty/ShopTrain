@@ -20,6 +20,15 @@
                                         <img src="~/images/snickers.webp" />""
                                     </figure>
                             </div>
+                            @if(p.StockCount == 0)
+                            {
+                            <div class="notification is-danger has-text-centered is-paddingless">Out of Stock</div>
+                            }
+                            else if(p.StockCount < 5)
+                            {
+                            <div class="notification is-warning has-text-centered is-paddingless">Low on Stock</div>
+                            }
+
                             <div class="card-content">
                                 <p class="title is-size-6">
                                     @p.Name @p.ValueStrRubles
@@ -28,6 +37,7 @@
                                     @p.Description
                                 </p>
 
+                                
                                 <div class="content">
                 
                                 </div>

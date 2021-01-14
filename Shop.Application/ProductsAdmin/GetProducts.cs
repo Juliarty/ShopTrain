@@ -17,13 +17,15 @@ namespace Shop.Application.ProductsAdmin
         }
 
         public IEnumerable<Response> Do() =>
-            _context.Products.ToList().Select(x => new Response
+            _context.Products
+            .Select(x => new Response
             {
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
                 ValueInRubles = x.Value
-            });
+            })
+            .ToList();
 
         public class Response
         {
@@ -31,7 +33,7 @@ namespace Shop.Application.ProductsAdmin
             public string Name { get; set; }
             public string Description { get; set; }
             public decimal ValueInRubles { get; set; }
-            public string ValueStrRubles { get => $"\x20bd{ValueInRubles}"; }
+            public string ValueStrRubles { get => $"\x20bd{ValueInRubles:N2}"; }
         }
     }
 

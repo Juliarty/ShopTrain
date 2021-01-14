@@ -22,6 +22,7 @@ namespace Shop.UI.Pages
         [BindProperty]
         public AddToCart.Request CartViewModel { get; set; }
 
+        [BindProperty]
         public GetProduct.Response Product { get; set; }
 
         public async Task OnGetAsync(string name)
@@ -41,5 +42,17 @@ namespace Shop.UI.Pages
                 //ToDo: Redirect to warning
                 return Page();
         }
+
+        //public ContentResult OnGetStockQty(int stockId)
+        //{
+        //    var stocks = new GetStocks(_ctx).Do(Product.Id);
+        //    var currentStock = stocks.FirstOrDefault(x => x.Id == stockId);
+        //    if(currentStock == null) throw new Exception($"There is no stock for product {Product.Name} with id: {stockId}");
+        //    if(currentStock.Qty == 0)
+        //    {
+
+        //    }
+        //    return Content(currentStock.Qty.ToString());
+        //}
     }
 }

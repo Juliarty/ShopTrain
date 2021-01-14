@@ -1,4 +1,5 @@
-﻿using Shop.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using Shop.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,18 +17,25 @@ namespace Shop.Application.Products
         }
 
         public IEnumerable<Response> Do() =>
-            _context.Products.ToList().Select(x => new Response
+            _context.Products
+            .Include(x => x.Stock)
+            .Select(x => new Response
             {
                 Id = x.Id,
                 Name = x.Name,
-                Value = $"${x.Value:N2}"
-            });
+                Description = x.Description,
+                ValueInRubles = x.Value,
+                StockCount = x.Stock.Sum(y => y.Qty)
+            }).ToList();
 
         public class Response
         {
             public int Id { get; set; }
             public string Name { get; set; }
-            public string Value { get; set; }
+            public string Description { get; set; }
+            public decimal ValueInRubles { get; set; }
+            public string ValueStrRubles { get => $"\x20bd{ValueInRubles:N2}"; }
+            public int StockCount { get; set; }
         }
     }
 }
