@@ -1,31 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shop.Database;
-using Shop.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Shop.Application.Orders
+namespace Shop.Application.OrdersAdmin
 {
-    public class GetOrder
+    public class GetOrders
     {
         private ApplicationDbContext _ctx;
 
-        public GetOrder(ApplicationDbContext ctx)
+        public GetOrders(ApplicationDbContext ctx)
         {
             _ctx = ctx;
         }
 
-        public Response Do(string orderRef)
+        public Response Do(int status)
         {
-            var response = _ctx.Orders
-                .Where(x => x.OrderRef == orderRef)
+            var orders = _ctx.Orders
+                .Where(x => (int)x.OrderStatus == status)
                 .Include(x => x.OrderStocks)
                 .ThenInclude(x => x.Stock)
                 .ThenInclude(x => x.Product)
-                .Select(x => new Response()
+                .Select(x => new OrderInformation()
                 {
+                    Id = x.Id,
                     OrderRef = x.OrderRef,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
@@ -35,7 +35,6 @@ namespace Shop.Application.Orders
                     Address2 = x.Address2,
                     City = x.City,
                     PostCode = x.PostCode,
-                    OrderStatus = x.OrderStatus,
                     Products = x.OrderStocks.Select(y => new Product
                     {
                         Name = y.Stock.Product.Name,
@@ -46,14 +45,19 @@ namespace Shop.Application.Orders
                         OverallValue = $"${y.Stock.Product.Value * y.Qty:N2}"
                     }),
                     TotalValue = $"${x.OrderStocks.Sum(y => y.Stock.Product.Value * y.Qty):N2}"
-                })
-                .FirstOrDefault();
+                });
 
-            return response;
+            return new Response { Orders = orders };
         }
 
         public class Response
         {
+            public IEnumerable<OrderInformation> Orders { get; set; }
+        }
+
+        public class OrderInformation
+        {
+            public int Id { get; set; }
             public string OrderRef { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -64,7 +68,7 @@ namespace Shop.Application.Orders
             public string Address2 { get; set; }
             public string City { get; set; }
             public string PostCode { get; set; }
-            public OrderStatus OrderStatus { get; set; }
+
             public IEnumerable<Product> Products { get; set; }
             public string TotalValue { get; set; }
         }

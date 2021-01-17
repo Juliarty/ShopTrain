@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Shop.Application.Orders
+namespace Shop.Application.OrdersAdmin
 {
     public class GetOrder
     {
@@ -17,15 +17,16 @@ namespace Shop.Application.Orders
             _ctx = ctx;
         }
 
-        public Response Do(string orderRef)
+        public Response Do(int id)
         {
             var response = _ctx.Orders
-                .Where(x => x.OrderRef == orderRef)
+                .Where(x => x.Id == id)
                 .Include(x => x.OrderStocks)
                 .ThenInclude(x => x.Stock)
                 .ThenInclude(x => x.Product)
                 .Select(x => new Response()
                 {
+                    Id = x.Id,
                     OrderRef = x.OrderRef,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
@@ -54,6 +55,7 @@ namespace Shop.Application.Orders
 
         public class Response
         {
+            public int Id { get; set; }
             public string OrderRef { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }

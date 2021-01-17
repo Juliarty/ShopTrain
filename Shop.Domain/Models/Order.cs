@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shop.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,6 +20,7 @@ namespace Shop.Domain.Models
         public string City{ get; set; }
         public string PostCode{ get; set; }
 
+        public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderStock> OrderStocks { get; set; }
     }
 }

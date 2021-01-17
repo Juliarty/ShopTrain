@@ -21,7 +21,7 @@ namespace Shop.UI.Pages
         }
         public void OnGet(string reference)
         {
-            Order = new GetOrder(_ctx).Do(reference);
+           // Order = new GetOrder(_ctx).Do(reference);
         }
     }
 }

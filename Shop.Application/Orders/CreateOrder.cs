@@ -1,4 +1,5 @@
 ﻿using Shop.Database;
+using Shop.Domain.Enums;
 using Shop.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ namespace Shop.Application.Orders
                 Address2 = request.Address2,
                 City = request.City,
                 PostCode = request.PostCode,
+                OrderStatus = Domain.Enums.OrderStatus.Pending,
                 OrderStocks = request.Stocks.Select(x => new OrderStock() { StockId = x.StockId, Qty = x.Qty }).ToList()
             };
 
@@ -78,6 +80,7 @@ namespace Shop.Application.Orders
             public string Address2 { get; set; }
             public string City { get; set; }
             public string PostCode { get; set; }
+            public OrderStatus OrderStatus { get; set; }
 
             public List<Stock> Stocks { get; set; }
         }
