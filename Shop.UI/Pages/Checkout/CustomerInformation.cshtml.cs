@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shop.Application.Cart;
+using Shop.Application.Infrastructure;
 using Shop.Database;
 
 namespace Shop.UI.Checkout
@@ -15,19 +16,21 @@ namespace Shop.UI.Checkout
     {
         private IWebHostEnvironment _env;
         private ApplicationDbContext _ctx;
+        private ISessionManager _sessionManager;
 
         [BindProperty]
         public AddCustomerInformation.Request CustomerInformation { get; set; }
-        public CustomerInformationModel(IWebHostEnvironment env, ApplicationDbContext ctx)
+        public CustomerInformationModel(IWebHostEnvironment env, ApplicationDbContext ctx, ISessionManager sessionManager)
         {
             _env = env;
             _ctx = ctx;
+            _sessionManager = sessionManager;
         }
         public IActionResult OnGet()
         {
             // get customer info
 
-            var information = new GetCustomerInformation(HttpContext.Session).Do();
+            var information = new GetCustomerInformation(_sessionManager).Do();
             if (information == null)
             {
                 if (_env.EnvironmentName == "Development")
@@ -59,7 +62,7 @@ namespace Shop.UI.Checkout
                 return Page();
             }
             //post customer info
-            new AddCustomerInformation(HttpContext.Session).Do(CustomerInformation);
+            new AddCustomerInformation(_sessionManager).Do(CustomerInformation);
             HttpContext.Response.Cookies.Append(
                 "customer-info",
                 HttpContext.Session.GetString("customer-info"),

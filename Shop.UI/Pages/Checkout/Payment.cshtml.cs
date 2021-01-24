@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Shop.Application.Cart;
+using Shop.Application.Infrastructure;
 using Shop.Application.Orders;
 using Shop.Database;
 using Stripe;
@@ -18,33 +19,35 @@ namespace Shop.UI.Checkout
         public string PublicKey { get; }
 
         private ApplicationDbContext _ctx;
+        private ISessionManager _sessionManager;
 
         [BindProperty]
         public Application.Cart.GetOrder.Response CartOrder { get; set; }
-        public PaymentModel(IConfiguration config, ApplicationDbContext context)
+        public PaymentModel(IConfiguration config, ApplicationDbContext context, ISessionManager sessionManager)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
             _ctx = context;
+            _sessionManager = sessionManager;
         }
 
 
         public IActionResult OnGet()
         {
 
-            var information = new GetCustomerInformation(HttpContext.Session).Do();
+            var information = new GetCustomerInformation(_sessionManager).Do();
             if (information == null)
             {
                 return RedirectToPage("/Checkout/CustomerInformation");
             }
 
-            CartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
+            CartOrder = new Application.Cart.GetOrder(_sessionManager, _ctx).Do();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPost()
         {
-            var cartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
+            var cartOrder = new Application.Cart.GetOrder(_sessionManager, _ctx).Do();
 
 
             await new CreateOrder(_ctx).Do(new CreateOrder.Request()

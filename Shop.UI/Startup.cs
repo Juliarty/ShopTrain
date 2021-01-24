@@ -15,6 +15,8 @@ using Stripe;
 using Microsoft.AspNetCore.Identity;
 using Shop.Application.Users;
 using Shop.Application;
+using Shop.Application.Infrastructure;
+using Shop.UI.Infrastructure;
 
 namespace Shop.UI
 {
@@ -30,6 +32,7 @@ namespace Shop.UI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             // Look at GDPR (General Data Protection Regulation)
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -90,6 +93,7 @@ namespace Shop.UI
                 });
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
+            services.AddTransient<ISessionManager, SessionManager>();
             services.AddApplicationServices();
             services.AddHttpContextAccessor();
         }

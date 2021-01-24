@@ -1,26 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+﻿using Shop.Application.Infrastructure;
 using Shop.Database;
-using Shop.Domain.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Application.Cart
 {
     public class RemoveItem
     {
-
-
         private ApplicationDbContext _ctx;
-        private ISession _session;
+        private ISessionManager _sessionManager;
 
-        public RemoveItem(ApplicationDbContext ctx, IHttpContextAccessor httpContextAccessor)
+        public RemoveItem(ApplicationDbContext ctx, ISessionManager sessionManager)
         {
             _ctx = ctx;
-            _session = httpContextAccessor.HttpContext.Session;
+            _sessionManager = sessionManager;
         }
 
 
@@ -29,18 +23,13 @@ namespace Shop.Application.Cart
             var chosenStock = _ctx.Stock.FirstOrDefault(x => x.Id == stockId);
 
 
-            var cartList = new List<CartStock>();
-            var stringObject = _session.GetString("cart");
+            var cartList = _sessionManager.GetCartItems().ToList();
 
 
             // Get a user cart
-            if (!string.IsNullOrEmpty(stringObject))
+            if (cartList.Count == 0) // no products on hold
             {
-                cartList = JsonConvert.DeserializeObject<List<CartStock>>(stringObject);
-            }
-            else // no cart, no products on hold
-            {
-                var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id);
+                var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _sessionManager.GetId());
                 if(stocksOnHold != null)
                 {
                     // It shouldn't work this way
@@ -62,7 +51,7 @@ namespace Shop.Application.Cart
             var qtyToRemove = stockFromCart.Qty;
             cartList.Remove(stockFromCart);
 
-            var stockToUnhold = _ctx.StocksOnHold.FirstOrDefault(x => x.SessionId == _session.Id && x.StockId == stockId);
+            var stockToUnhold = _ctx.StocksOnHold.FirstOrDefault(x => x.SessionId == _sessionManager.GetId() && x.StockId == stockId);
 
             if(stockToUnhold == null || stockToUnhold.Qty < qtyToRemove)
             {
@@ -81,8 +70,14 @@ namespace Shop.Application.Cart
             await _ctx.SaveChangesAsync();
   
             // Save cookie
-            stringObject = JsonConvert.SerializeObject(cartList);
-            _session.SetString("cart", stringObject);
+            //stringObject = JsonConvert.SerializeObject(cartList);
+            //SetString("cart", stringObject);
+            _sessionManager.SetCartItems(cartList.Select(x=> new AddToCart.Request()
+            {
+                StockId = x.StockId,
+                Qty = x.Qty
+            }));
+
             return true;
         }
         

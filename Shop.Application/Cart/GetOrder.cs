@@ -1,31 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Shop.Application.Infrastructure;
 using Shop.Database;
-using Shop.Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Shop.Application.Cart
 {
     public class GetOrder
     {
-        private ISession _session;
+        private ISessionManager _sessionManager;
         private ApplicationDbContext _ctx;
 
-        public GetOrder(ISession session, ApplicationDbContext ctx)
+        public GetOrder(ISessionManager sessionManager, ApplicationDbContext ctx)
         {
-            _session = session;
+            _sessionManager = sessionManager;
             _ctx = ctx;
         }
 
         public Response Do()
         {
-            var cart = _session.GetString("cart");
-
-            var cartList = JsonConvert.DeserializeObject<List<CartStock>>(cart);
+            var cartList = _sessionManager.GetCartItems();
 
             var listOfProducts = _ctx.Stock
                 .Include(x => x.Product)
@@ -39,8 +33,7 @@ namespace Shop.Application.Cart
                     Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
                 }).ToList();
 
-            var customerInformationString = _session.GetString("customer-info");
-            var customerInformation = JsonConvert.DeserializeObject<Domain.Models.CustomerInformation>(customerInformationString);
+            var customerInformation = _sessionManager.GetCustomerInformation();
 
             return new Response()
             {

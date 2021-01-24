@@ -1,30 +1,26 @@
 ﻿using Shop.Database;
-using Microsoft.AspNetCore.Http;
-
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
 using Shop.Domain.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Shop.Application.Infrastructure;
 
 namespace Shop.Application.Cart
 {
     public class AddToCart
     {
         private ApplicationDbContext _ctx;
-        private ISession _session;
+        private ISessionManager _sessionManager;
 
-        public AddToCart(ApplicationDbContext ctx, IHttpContextAccessor httpContextAccessor)
+        public AddToCart(ApplicationDbContext ctx, ISessionManager sessionManager)
         {
             _ctx = ctx;
-            _session = httpContextAccessor.HttpContext.Session;
+            _sessionManager = sessionManager;
         }
 
         public async Task<bool> DoAsync(Request request)
         {
-            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id);
+            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _sessionManager.GetId());
                 // User is active so we postpone the moment when the goods he chose is expired
             foreach (var stock in stocksOnHold)
             {
@@ -34,7 +30,7 @@ namespace Shop.Application.Cart
             }
             
             var chosenStock = _ctx.Stock.FirstOrDefault(x => x.Id == request.StockId);
-            var stockOnHold = _ctx.StocksOnHold.FirstOrDefault(x => x.SessionId == _session.Id && x.StockId == request.StockId);
+            var stockOnHold = _ctx.StocksOnHold.FirstOrDefault(x => x.SessionId == _sessionManager.GetId() && x.StockId == request.StockId);
 
             if(request.Qty > 0)
             {
@@ -52,7 +48,7 @@ namespace Shop.Application.Cart
                 _ctx.StocksOnHold.Add(new StocksOnHold()
                 {
                     StockId = request.StockId,
-                    SessionId = _session.Id,
+                    SessionId = _sessionManager.GetId(),
                     Qty = request.Qty,
                     ExpiryTime = DateTime.Now.AddMinutes(20)
                 });
@@ -68,28 +64,31 @@ namespace Shop.Application.Cart
 
             await _ctx.SaveChangesAsync();
 
-            ChangeCookie(_session, request.StockId, request.Qty);
+            ChangeCookie(_sessionManager, request.StockId, request.Qty);
 
             return true;
         }
 
 
-        private static void ChangeCookie(ISession session, int stockId, int qty)
+        private static void ChangeCookie(ISessionManager sessionManager, int stockId, int qty)
         {
-            var cartList = new List<CartStock>();
-            var stringObject = session.GetString("cart");
-            if (!string.IsNullOrEmpty(stringObject))
+            var cartList = sessionManager.GetCartItems().Select(x => new Request()
             {
-                cartList = JsonConvert.DeserializeObject<List<CartStock>>(stringObject);
-            }
+                StockId = x.StockId,
+                Qty = x.Qty
+            }).ToList();
 
             if (cartList.Any(x => x.StockId == stockId))
             {
-                cartList.Find(x => x.StockId == stockId).Qty += qty;
+                var cartStockToChange = cartList.FirstOrDefault(x => x.StockId == stockId);
+                if(cartStockToChange != null)
+                {
+                    cartStockToChange.Qty += qty;
+                }             
             }
             else
             {
-                var cartProduct = new CartStock()
+                var cartProduct = new Request()
                 {
                     Qty = qty,
                     StockId = stockId
@@ -97,9 +96,7 @@ namespace Shop.Application.Cart
                 cartList.Add(cartProduct);
             }
 
-            stringObject = JsonConvert.SerializeObject(cartList);
-
-            session.SetString("cart", stringObject);
+            sessionManager.SetCartItems(cartList);
         }
 
         public class Request
