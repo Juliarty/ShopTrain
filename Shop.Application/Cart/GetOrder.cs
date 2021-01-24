@@ -25,7 +25,7 @@ namespace Shop.Application.Cart
         {
             var cart = _session.GetString("cart");
 
-            var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(cart);
+            var cartList = JsonConvert.DeserializeObject<List<CartStock>>(cart);
 
             var listOfProducts = _ctx.Stock
                 .Include(x => x.Product)

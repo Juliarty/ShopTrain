@@ -36,7 +36,6 @@
 
     },
     mounted() {
-
         // get product id
         var productId = document.getElementById("productId");
         this.productId = productId.value;

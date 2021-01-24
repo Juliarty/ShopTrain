@@ -4,49 +4,74 @@
     ViewData["Title"] = "Cart";
 }
 
-<div class="container">
-    <div class="columns">
-        <div class="column is-6 is-offset-1">
-
-                @foreach (var cart in Model.Cart)
-                {
-                    <div class="level">
-                        <div class="level-item">
-                            <figure class="image is-128x128">
-                                <img src="~/images/snickers.webp" />
-                            </figure>
-                        </div>
-                        <div class="level-item">
-                            <div class="title">
-                                @cart.Name
-                            </div>
-                        </div>
-                        <div class="level-item">
-                            <p>@cart.ValueStrRubles</p>
-                        </div>
-                        <div class="level-item">
-                            <p>@cart.Qty</p>
+<div id="app" class="container">
+    <div class="block">
+        <div v-if="cartItems.length>0">
+            <div class="is-offset-1">
+                <div class="level" v-for="item in cartItems">
+                    <div class="level-item">
+                        <figure class="image is-128x128">
+                            <img src="~/images/snickers.webp" />
+                        </figure>
+                    </div>
+                    <div class="level-item">
+                        <div class="title has-text-centered">
+                            {{item.name}}
                         </div>
                     </div>
-                }
+                    <div class="level-item has-text-centered">
+                        <p>{{item.valueStrRubles}}</p>
+                    </div>
+                    <div class="level-item">
+                        <div class="level is-mobile">
+                            <div class="level-item">
+                                <button name="minus-button" class="button is-left" type="button" v-bind:data-stock-id="item.stockId" @@click="removeOneFromCart">-</button>
+                            </div>
+                            <div class="level-item is-align-self-center">
+                                <p>
+                                    {{item.qty}}
+                                </p>
+                            </div>
+                            <div class="level-item">
+                                <button name="plus-button  is-right" class="button" type="button" v-bind:data-stock-id="item.stockId" @@click="addOneToCart">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <button name="remove-button" class="button is-danger is-outlined" @@click="removeItem">
+                            <span v-bind:data-stock-id="item.stockId">
+                                Remove
+                            </span>
+                            <span v-bind:data-stock-id="item.stockId" class="icon is-small">
+                                <i class="fas fa-times"></i>
+                            </span>
+                        </button>
+                    </div>
 
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <div class="title has-text-centered">
+                Your cart is empty :(
+            </div>
         </div>
     </div>
 
-    <div class="has-text-right">
-        <div class="level-right">
+    <div class="block has-text-right is-centere">
+        <div class="level-right is-mobile">
             <p class="level-item">
-                    <a class="button is-italic" asp-page="\Index">
-                    
-                        <span class="icon">
-                            <i class="fas fa-arrow-left"></i>
-                        </span>
-                    
-                        <span>
-                            Back To Shop
-                        </span> 
-                    
-                    </a>
+                <a class="button is-italic" asp-page="\Index">
+
+                    <span class="icon">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+
+                    <span>
+                        Back To Shop
+                    </span>
+
+                </a>
             </p>
 
             <p class="level-item">
@@ -60,6 +85,11 @@
 
         </div>
     </div>
-     
-    @*@await Component.InvokeAsync("Cart", new { componentName = "Small"})*@
+
 </div>
+
+
+@section Scripts{ 
+<script src="~/js/cart/cart.js"></script>
+    
+} 

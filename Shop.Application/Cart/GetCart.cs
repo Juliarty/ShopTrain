@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Shop.Application.Cart
 {
@@ -16,13 +17,13 @@ namespace Shop.Application.Cart
         private ISession _session;
         private ApplicationDbContext _ctx;
 
-        public GetCart(ISession session, ApplicationDbContext ctx)
+        public GetCart(IHttpContextAccessor httpContextAccessor, ApplicationDbContext ctx)
         {
-            _session = session;
+            _session = httpContextAccessor.HttpContext.Session;
             _ctx = ctx;
         }
 
-        public IEnumerable<Response> Do()
+        public async Task<IEnumerable<Response>> DoAsync()
         {
             // TODO: account for multiple items in the cart
 

@@ -10,16 +10,16 @@ namespace Shop.UI.ViewComponents
 {
     public class CartViewComponent: ViewComponent
     {
-        private ApplicationDbContext _ctx;
-
-        public CartViewComponent(ApplicationDbContext ctx)
+        private GetCart GetCart { get; set; }
+        public CartViewComponent([FromServices] GetCart getCart)
         {
-            _ctx = ctx;
+            GetCart = getCart;
         }
 
-        public IViewComponentResult Invoke(string componentName)
+        public async Task<IViewComponentResult> InvokeAsync(string componentName)
         {
-            return View(componentName, new GetCart(HttpContext.Session, _ctx).Do());
+            var items = await GetCart.DoAsync();
+            return View(componentName, items.ToList());
         }
     }
 }

@@ -4,20 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Shop.Application.Products
 {
     public class GetProducts
     {
-        private ApplicationDbContext _context;
+        private ApplicationDbContext _ctx;
 
         public GetProducts(ApplicationDbContext context)
         {
-            _context = context;
+            _ctx = context;
         }
 
-        public IEnumerable<Response> Do() =>
-            _context.Products
+        public async Task<IEnumerable<Response>> DoAsync()
+        {
+            await new RemoveExpiredStocksOnHold(_ctx).DoAsync();
+
+            return
+            _ctx.Products
             .Include(x => x.Stock)
             .Select(x => new Response
             {
@@ -27,6 +32,8 @@ namespace Shop.Application.Products
                 ValueInRubles = x.Value,
                 StockCount = x.Stock.Sum(y => y.Qty)
             }).ToList();
+
+        }
 
         public class Response
         {

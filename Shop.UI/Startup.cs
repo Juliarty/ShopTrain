@@ -37,6 +37,8 @@ namespace Shop.UI
                 options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
             });
 
+
+            // it is scoped, so each ctx object lives over the request lifetime 
             services.AddDbContext<ApplicationDbContext>((options) => options.UseSqlServer(Configuration["DefaultConnection"]));
             
             // AddDefaultIdentity adds a bunch of pre-built stuff (boilerplates) like LoginPartial.cshtml and the like
@@ -89,6 +91,7 @@ namespace Shop.UI
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
             services.AddApplicationServices();
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

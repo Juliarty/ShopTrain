@@ -22,9 +22,9 @@ namespace Shop.UI.Pages
             _context = context;
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
-            Products = new GetProducts(_context).Do();
+            Products = await new GetProducts(_context).DoAsync();
         }
         
     }

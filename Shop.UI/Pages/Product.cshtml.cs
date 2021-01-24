@@ -27,15 +27,15 @@ namespace Shop.UI.Pages
 
         public async Task OnGetAsync(string name)
         {
-            Product = await new GetProduct(_ctx).Do(name.Replace("-", " "));
+            Product = await new GetProduct(_ctx).DoAsync(name.Replace("-", " "));
         }
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync([FromServices] AddToCart addToCart)
         {
             //var currentId = HttpContext.Session.GetString("id");
             //HttpContext.Session.SetString("id", "");
 
             //ToDo: check whether any stock was selected
-            var stockAddedToCart = await new AddToCart(_ctx, HttpContext.Session).Do(CartViewModel);
+            var stockAddedToCart = await addToCart.DoAsync(CartViewModel);
             if (stockAddedToCart)
                 return RedirectToPage("Cart");
             else

@@ -17,20 +17,9 @@ namespace Shop.Application.Products
             _ctx = context;
         }
 
-        public async Task<Response> Do(string name)
+        public async Task<Response> DoAsync(string name)
         {
-            var expiredStocksOnHold = _ctx.StocksOnHold.Where(x => x.ExpiryTime < DateTime.Now).ToList();
-
-            if (expiredStocksOnHold.Count > 0)
-            {
-                foreach (var expiredStock in expiredStocksOnHold)
-                {
-                    var stock = _ctx.Stock.Where(x => expiredStock.StockId == x.Id).FirstOrDefault();
-                    stock.Qty += expiredStock.Qty;
-                }
-                _ctx.RemoveRange(expiredStocksOnHold);
-                await _ctx.SaveChangesAsync();
-            }
+            await new RemoveExpiredStocksOnHold(_ctx).DoAsync();
 
             return _ctx.Products.Where(x => x.Name == name)
                 .Include(x => x.Stock)
@@ -48,6 +37,10 @@ namespace Shop.Application.Products
                     }).ToList()
                 }).FirstOrDefault();
         }
+        
+        
+        
+        
         public class Response
         {
             public int Id { get; set; }
