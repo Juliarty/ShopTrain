@@ -74,7 +74,7 @@
                 </a>
             </p>
 
-            <p class="level-item">
+            <p class="level-item" v-if="cartItems.length > 0">
                 <a class="button is-success" asp-page="\Checkout\Payment">
                     <span>
                         Checkout

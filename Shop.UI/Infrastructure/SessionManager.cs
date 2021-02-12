@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 using Shop.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -22,19 +22,19 @@ namespace Shop.UI.Infrastructure
 
         #region ISessionManager
         public string GetId() => _session.Id;
-        public void SetCartItems(IEnumerable<AddToCart.Request> items)
+        public void SetCartItems(IEnumerable<CartProduct> items)
         {
             var stringObject = JsonConvert.SerializeObject(items.ToList());
             _session.SetString(_cartCookieName, stringObject);
 
         }
-        public IEnumerable<GetCart.Response> GetCartItems()
+        public IEnumerable<TResult> GetCartItems<TResult>(Func<CartProduct, TResult> selector)
         {
             var stringObject = _session.GetString(_cartCookieName);
 
-            if (string.IsNullOrEmpty(stringObject)) return Enumerable.Empty<GetCart.Response>();
+            if (string.IsNullOrEmpty(stringObject)) return Enumerable.Empty<TResult>();
 
-            return JsonConvert.DeserializeObject<List<GetCart.Response>>(stringObject);
+            return JsonConvert.DeserializeObject<List<CartProduct>>(stringObject).Select(selector);
         }
 
         public CustomerInformation GetCustomerInformation()

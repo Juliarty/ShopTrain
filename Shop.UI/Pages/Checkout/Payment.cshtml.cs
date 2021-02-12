@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Shop.Application.Cart;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 using Shop.Application.Orders;
 using Shop.Database;
 using Stripe;
@@ -40,14 +40,14 @@ namespace Shop.UI.Checkout
                 return RedirectToPage("/Checkout/CustomerInformation");
             }
 
-            CartOrder = new Application.Cart.GetOrder(_sessionManager, _ctx).Do();
+            CartOrder = new Application.Cart.GetOrder(_sessionManager).Do();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPost()
         {
-            var cartOrder = new Application.Cart.GetOrder(_sessionManager, _ctx).Do();
+            var cartOrder = new Application.Cart.GetOrder(_sessionManager).Do();
 
 
             await new CreateOrder(_ctx).Do(new CreateOrder.Request()

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Shop.Application.Cart;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 using Shop.Database;
 
 namespace Shop.UI.Checkout

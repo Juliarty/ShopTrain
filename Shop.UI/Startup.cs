@@ -15,7 +15,7 @@ using Stripe;
 using Microsoft.AspNetCore.Identity;
 using Shop.Application.Users;
 using Shop.Application;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 using Shop.UI.Infrastructure;
 
 namespace Shop.UI
@@ -93,7 +93,8 @@ namespace Shop.UI
                 });
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
-            services.AddTransient<ISessionManager, SessionManager>();
+            services.AddScoped<ISessionManager, SessionManager>();
+            services.AddTransient<IStockManager, StockManager>();
             services.AddApplicationServices();
             services.AddHttpContextAccessor();
         }

@@ -3,101 +3,52 @@ using System;
 using Shop.Domain.Models;
 using System.Linq;
 using System.Threading.Tasks;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 
 namespace Shop.Application.Cart
 {
     public class AddToCart
     {
-        private ApplicationDbContext _ctx;
         private ISessionManager _sessionManager;
+        private IStockManager _stockManager;
 
-        public AddToCart(ApplicationDbContext ctx, ISessionManager sessionManager)
+
+        public AddToCart(IStockManager stockManager, ISessionManager sessionManager)
         {
-            _ctx = ctx;
+            _stockManager = stockManager;
             _sessionManager = sessionManager;
         }
 
         public async Task<bool> DoAsync(Request request)
         {
-            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _sessionManager.GetId());
-                // User is active so we postpone the moment when the goods he chose is expired
-            foreach (var stock in stocksOnHold)
-            {
-                // ToDo: User can change infinitely, but shoukld be mechanism to avoid this
-                stock.ExpiryTime = DateTime.Now.AddMinutes(20);
-                // ToDo: extend cookie expiring time, or just keep it for session time... no.. it's not so convenient
-            }
-            
-            var chosenStock = _ctx.Stock.FirstOrDefault(x => x.Id == request.StockId);
-            var stockOnHold = _ctx.StocksOnHold.FirstOrDefault(x => x.SessionId == _sessionManager.GetId() && x.StockId == request.StockId);
+            if (!_stockManager.EnoughStock(request.StockId, request.Qty)) return false;
 
-            if(request.Qty > 0)
+            await _stockManager.PutStockOnHoldAsync(request.StockId, request.Qty, _sessionManager.GetId());
+
+            var cartList = _sessionManager.GetCartItems(x => x).ToList();
+
+            var cartItem = cartList.FirstOrDefault(x => x.StockId == request.StockId);
+            if (cartItem != null)
             {
-                if(chosenStock.Qty < request.Qty) return false;
+                cartItem.Qty += request.Qty;
             }
             else
             {
-                // we leave one element always in a cart (a user should remove it manually)
-                if(stockOnHold.Qty - 1 < -request.Qty) return false;
-            }
-
-            // Prepare good for being ordered
-            if (stockOnHold == null)
-            {
-                _ctx.StocksOnHold.Add(new StocksOnHold()
+                var stock = _stockManager.GetStockWithProduct(request.StockId);
+                cartList.Add(new CartProduct()
                 {
-                    StockId = request.StockId,
-                    SessionId = _sessionManager.GetId(),
                     Qty = request.Qty,
-                    ExpiryTime = DateTime.Now.AddMinutes(20)
+                    StockId = request.StockId,
+                    ProductName = stock.Product.Name,
+                    ValueInRubles = stock.Product.Value,
+                    ProductId = stock.ProductId
                 });
             }
-            else
-            {
-                stockOnHold.Qty += request.Qty;
-            }
-
-            chosenStock.Qty -= request.Qty;
-
-        
-
-            await _ctx.SaveChangesAsync();
-
-            ChangeCookie(_sessionManager, request.StockId, request.Qty);
-
+            _sessionManager.SetCartItems(cartList);
             return true;
         }
 
 
-        private static void ChangeCookie(ISessionManager sessionManager, int stockId, int qty)
-        {
-            var cartList = sessionManager.GetCartItems().Select(x => new Request()
-            {
-                StockId = x.StockId,
-                Qty = x.Qty
-            }).ToList();
-
-            if (cartList.Any(x => x.StockId == stockId))
-            {
-                var cartStockToChange = cartList.FirstOrDefault(x => x.StockId == stockId);
-                if(cartStockToChange != null)
-                {
-                    cartStockToChange.Qty += qty;
-                }             
-            }
-            else
-            {
-                var cartProduct = new Request()
-                {
-                    Qty = qty,
-                    StockId = stockId
-                };
-                cartList.Add(cartProduct);
-            }
-
-            sessionManager.SetCartItems(cartList);
-        }
 
         public class Request
         {

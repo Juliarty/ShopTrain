@@ -13,8 +13,6 @@
             this.loading = true;
             axios.get("Cart/items")
                 .then(res => {
-                    console.log("data reloaded");
-                    console.log(res.data);
                     this.cartItems = res.data;
                 })
                 .catch(err => {
@@ -27,7 +25,6 @@
 
         addOneToCart(e) {
             var stockId = e.target.dataset.stockId;
-            console.log("addOneToCart: " + stockId);
             this.loading = true;
 
             axios.post("Cart/AddOne/" + stockId, null)
@@ -45,8 +42,6 @@
 
         removeOneFromCart(e) {
             var stockId = e.target.dataset.stockId;
-            console.log(e.target);
-            console.log("subOneFromCart: " + stockId);
             this.loading = true;
 
             axios.post("Cart/SubOne/" + stockId, null)
@@ -69,8 +64,6 @@
 
             axios.post("Cart/RemoveItem/" + stockId, null)
                 .then(res => {
-                    console.log("Remove clicked");
-                    console.log(e.target);
                     this.cartItems = [];
                     this.getCart();
                     this.updateSmallCart();
@@ -90,7 +83,6 @@
                 .then(res => {
                     var el = document.getElementById("nav-small-cart");
                     el.outerHTML = res.data;
-                    console.log(res.data);
                 })
                 .catch(err => {
                     console.log(err);

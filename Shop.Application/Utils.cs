@@ -16,7 +16,5 @@ namespace Shop.Application
             return decimal.Parse(value);
         }
 
-        public static string GetRubles(decimal value) => $"\x20BD{value}";
-
     }
 }

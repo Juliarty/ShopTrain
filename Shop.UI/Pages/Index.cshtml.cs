@@ -12,19 +12,11 @@ namespace Shop.UI.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        private ApplicationDbContext _context;
-
         public IEnumerable<GetProducts.Response> Products { get; set; }
-        public IndexModel(ILogger<IndexModel> logger, ApplicationDbContext context)
-        {
-            _logger = logger;
-            _context = context;
-        }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync([FromServices] GetProducts getProducts)
         {
-            Products = await new GetProducts(_context).DoAsync();
+            Products = await getProducts.DoAsync();
         }
         
     }

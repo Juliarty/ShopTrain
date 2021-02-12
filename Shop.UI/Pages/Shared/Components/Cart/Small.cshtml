@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Shop.Application.Cart.GetCart.Response>
+﻿@using Shop.Domain.Infrastructure
+@model IEnumerable<Shop.Application.Cart.GetCart.Response>
 <div class="field is-grouped" id="nav-small-cart">
     <p class="control">
         <a class="button is-warning" asp-page="/Cart">
@@ -6,7 +7,7 @@
                 <i class="fas fa-shopping-cart" aria-hidden="true"></i>
             </span>
             <span>
-               @Shop.Application.Utils.GetRubles(Model.Sum(x => x.ValueInRubles * x.Qty))
+               @Model.Sum(x => x.ValueInRubles * x.Qty).GetRubPrice()
             </span>
         </a>
     </p>

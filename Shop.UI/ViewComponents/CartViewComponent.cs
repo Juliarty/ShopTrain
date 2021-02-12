@@ -16,10 +16,9 @@ namespace Shop.UI.ViewComponents
             GetCart = getCart;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string componentName)
+        public IViewComponentResult Invoke(string componentName)
         {
-            var items = await GetCart.DoAsync();
-            return View(componentName, items.ToList());
+            return View(componentName, GetCart.Do());
         }
     }
 }

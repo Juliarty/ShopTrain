@@ -13,71 +13,66 @@ namespace Shop.UI.Controllers
 
         [Route("/[controller]/items")]
         [HttpGet("")]
-        public async Task<List<GetCart.Response>> GetCartAsync([FromServices] GetCart getCart)
+        public IEnumerable<GetCart.Response> GetCart([FromServices] GetCart getCart)
         {
-            var result = await getCart.DoAsync();
-            return result.ToList();
+          return getCart.Do();
         }
 
         [HttpGet("")]
         public IActionResult GetSmallCart()
         {
-
-            //return Ok(ViewComponent("Cart", new { componentName = "Small" }));
-            return new ViewComponentResult
-            {
-                ViewComponentName = "Cart",
-                Arguments = new { componentName = "Small" },
-                ViewData = this.ViewData,
-                TempData = this.TempData
-            };
-            var t = ViewComponent("Cart", new { componentName ="Small" });
-            return t;
+            return ViewComponent("Cart", new { componentName = "Small" });
         }
 
         [HttpPost("{id}")]
         public async Task<IActionResult> AddOneAsync(int id, [FromServices] AddToCart addToCart)
         {
-            var request = new AddToCart.Request()
+
+            var success = await addToCart.DoAsync(new AddToCart.Request()
             {
                 StockId = id,
                 Qty = 1,
-            };
+            });
 
-            var success = await addToCart.DoAsync(request);
+
             if (success)
             {
                 return Ok("Item was added successfully.");
             }
 
-
             return BadRequest("Failed to add to the cart.");
         }
 
         [HttpPost("{stockId}")]
-        public async Task<IActionResult> SubOne(int stockId, [FromServices] AddToCart addToCart)
+        public async Task<IActionResult> SubOne(int stockId, [FromServices] RemoveFromCart removeFromCart)
         {
-            var request = new AddToCart.Request()
+
+            var success = await removeFromCart.DoAsync(new RemoveFromCart.Request()
             {
                 StockId = stockId,
-                Qty = -1,
-            };
+                Qty = 1,
+                RemoveAll = false
+            });
 
-            var success = await addToCart.DoAsync(request);
             if (success) 
             {
                 return Ok("Item was subtructed successfully");      
             }
-
 
             return BadRequest("Failed to subtract from the cart");
         }
 
 
         [HttpPost("{stockId}")]
-        public async Task<IActionResult> RemoveItem(int stockId, [FromServices] RemoveItem removeItem)
+        public async Task<IActionResult> RemoveItem(int stockId, [FromServices] RemoveFromCart removeFromCart)
         {
-            var success = await removeItem.DoAsync(stockId);
+            var success = await removeFromCart.DoAsync(new RemoveFromCart.Request()
+            {
+                StockId = stockId,
+                Qty = 0,
+                RemoveAll = true
+            });
+
             if (success)
             {
                 return Ok("Item was removed successfully");

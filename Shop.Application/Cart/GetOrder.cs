@@ -1,37 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Shop.Application.Infrastructure;
+using Shop.Domain.Infrastructure;
 using Shop.Database;
 using System.Collections.Generic;
 using System.Linq;
-
 namespace Shop.Application.Cart
 {
     public class GetOrder
     {
         private ISessionManager _sessionManager;
-        private ApplicationDbContext _ctx;
 
-        public GetOrder(ISessionManager sessionManager, ApplicationDbContext ctx)
+        public GetOrder(ISessionManager sessionManager)
         {
             _sessionManager = sessionManager;
-            _ctx = ctx;
         }
 
         public Response Do()
         {
-            var cartList = _sessionManager.GetCartItems();
-
-            var listOfProducts = _ctx.Stock
-                .Include(x => x.Product)
-                .AsEnumerable()
-                .Where(x => cartList.Any(y => y.StockId == x.Id))
-                .Select(x => new Product()
+            var listOfProducts = _sessionManager.GetCartItems(x => new Product()
                 {
                     ProductId = x.ProductId,
-                    StockId = x.Id,
-                    Value = x.Product.Value, // Do not lose cents!
-                    Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
-                }).ToList();
+                    StockId = x.StockId,
+                    Value = x.ValueInRubles, // Do not lose cents!
+                    Qty = x.Qty
+                });
 
             var customerInformation = _sessionManager.GetCustomerInformation();
 
@@ -56,7 +47,7 @@ namespace Shop.Application.Cart
         {
             public IEnumerable<Product> Products { get; set; }
             public CustomerInformation CustomerInformation { get; set; }
-            public string TotalChargeStrRubles => $"\x20BD{GetTotalCharge()}";
+            public string TotalChargeStrRubles => GetTotalCharge().GetRubPrice();
             public decimal GetTotalCharge() => Products.Sum(x => x.Value * x.Qty);
         }
 
