@@ -1,12 +1,11 @@
-﻿using Shop.Database;
-using System;
-using Shop.Domain.Models;
+﻿using Shop.Domain.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Shop.Domain.Infrastructure;
 
 namespace Shop.Application.Cart
 {
+    [Service]
     public class AddToCart
     {
         private ISessionManager _sessionManager;

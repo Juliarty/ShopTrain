@@ -1,18 +1,18 @@
-﻿using Shop.Database;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shop.Domain.Models;
+using Shop.Domain.Infrastructure;
 
-namespace Shop.Application.StockAdmin
+namespace Shop.Application.StocksAdmin
 {
+    [Service]
     public class UpdateStock
     {
-        private ApplicationDbContext _ctx;
+        private readonly IStockManager _stockManager;
 
-        public UpdateStock(ApplicationDbContext ctx)
+        public UpdateStock(IStockManager stockManager)
         {
-            _ctx = ctx;
+            _stockManager = stockManager;
         }
 
         public async Task<Response> Do(Request request)
@@ -29,9 +29,10 @@ namespace Shop.Application.StockAdmin
                     ProductId = el.ProductId
                 });
             }
-            _ctx.Stock.UpdateRange(stock);
 
-            await _ctx.SaveChangesAsync();
+            var success = await _stockManager.UpdateStockRangeAsync(stock);
+
+            if (!success) throw new System.Exception("Couldn't update stock");
 
             return new Response
             {

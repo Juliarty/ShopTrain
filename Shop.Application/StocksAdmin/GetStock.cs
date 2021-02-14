@@ -1,27 +1,21 @@
-﻿using Shop.Database;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Shop.Domain.Infrastructure;
 
-namespace Shop.Application.StockAdmin
+namespace Shop.Application.StocksAdmin
 {
+    [Service]
     public class GetStock
     {
-        private ApplicationDbContext _ctx;
+        private readonly IProductManager _productManager;
 
-        public GetStock(ApplicationDbContext ctx)
+        public GetStock(IProductManager productManager)
         {
-            _ctx = ctx;
+            _productManager = productManager;
         }
 
-        public IEnumerable<ProductViewModel> Do()
-        {
-            var stock = _ctx.Products
-                .Include(x => x.Stock)
-                .Select
-                (x => new ProductViewModel
+        public IEnumerable<ProductViewModel> Do() =>
+            _productManager.GetProducts(x => true, x => new ProductViewModel
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -33,8 +27,6 @@ namespace Shop.Application.StockAdmin
                     })
                 });
 
-            return stock;
-        }
 
         public class ProductViewModel
         {

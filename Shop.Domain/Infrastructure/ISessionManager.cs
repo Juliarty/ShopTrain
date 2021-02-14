@@ -1,7 +1,6 @@
 ﻿using Shop.Domain.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Shop.Domain.Infrastructure
 {
@@ -13,5 +12,7 @@ namespace Shop.Domain.Infrastructure
 
         CustomerInformation GetCustomerInformation();
         void SetCustomerInformation(CustomerInformation customerInformation);
+
+        void ClearCart();
     }
 }

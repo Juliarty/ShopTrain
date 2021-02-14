@@ -1,34 +1,30 @@
-﻿using Shop.Database;
-using Shop.Domain.Enums;
+﻿using Shop.Domain.Enums;
+using Shop.Domain.Infrastructure;
 using Shop.Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Application.Orders
 {
+    [Service]
     public class CreateOrder
     {
-        ApplicationDbContext _ctx;
+        private IOrderManager _orderManager;
+        private IStockManager _stockManager;
 
-        public CreateOrder(ApplicationDbContext ctx)
+        public CreateOrder(IOrderManager orderManager, IStockManager stockManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
+            _stockManager = stockManager;
         }
 
         public async Task<bool> Do(Request request)
         {
-            var stockIds = request.Stocks.Select(x => x.StockId).ToList();
-
-            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == request.SessionId).ToList();
-
-            _ctx.StocksOnHold.RemoveRange(stockOnHold);
 
             var order = new Order()
             {
-                OrderRef = CreateOrderReference(),
+                OrderRef = _orderManager.CreateOrderReference(),
                 StripeRef = request.StripeReference,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -38,36 +34,20 @@ namespace Shop.Application.Orders
                 Address2 = request.Address2,
                 City = request.City,
                 PostCode = request.PostCode,
-                OrderStatus = Domain.Enums.OrderStatus.Pending,
+                OrderStatus = OrderStatus.Pending,
                 OrderStocks = request.Stocks.Select(x => new OrderStock() { StockId = x.StockId, Qty = x.Qty }).ToList()
             };
 
-            _ctx.Orders.Add(order);
+            var success = await _orderManager.CreateOrderAsync(order);
 
-            await _ctx.SaveChangesAsync();
+            if (!success) return false;
+            
+            await _stockManager.ReleaseStockOnHoldAsync(request.SessionId);
 
             return true;
+            
         }
 
-
-        private string CreateOrderReference()
-        {
-            var chars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
-            var random = new Random();
-
-            var result = new char[12];
-
-            do
-            {
-                for (var i = 0; i < result.Length; ++i)
-                {
-                    result[i] = chars[random.Next(chars.Length)];
-                }
-
-            } while (_ctx.Orders.Any(x => x.OrderRef == new string(result)));
-
-            return new string(result);
-        }
         public class Request
         {
             public string StripeReference { get; set; }

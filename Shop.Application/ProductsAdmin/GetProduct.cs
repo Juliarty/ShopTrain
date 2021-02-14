@@ -1,28 +1,25 @@
-﻿using Shop.Database;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Shop.Domain.Infrastructure;
 
 namespace Shop.Application.ProductsAdmin
 {
+    [Service]
     public class GetProduct
     {
-        private ApplicationDbContext _context;
+        private readonly IProductManager _productManager;
 
-        public GetProduct(ApplicationDbContext context)
+        public GetProduct(IProductManager productManager)
         {
-            _context = context;
+            _productManager = productManager;
         }
 
-        public Response Do(int id) =>
-            _context.Products.ToList().Where(x => x.Id == id).Select(x => new Response
+        public Response Do(int id) => _productManager.GetProductById(id, x => new Response
             {
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
                 Value = x.Value.ToString()
-            }).FirstOrDefault();
+            });
+
         public class Response
         {
             public int Id { get; set; }

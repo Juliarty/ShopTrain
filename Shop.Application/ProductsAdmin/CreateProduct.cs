@@ -1,21 +1,20 @@
-﻿using Shop.Database;
+﻿using Shop.Domain.Infrastructure;
 using Shop.Domain.Models;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Shop.Application.ProductsAdmin
 {
+    [Service]
     public class CreateProduct
     {
-        private ApplicationDbContext _context;
+        private readonly IProductManager _productManager;
 
-        public CreateProduct(ApplicationDbContext context)
+        public CreateProduct(IProductManager productManager)
         {
-            _context = context;
+            _productManager = productManager;
         }
 
-        public async Task<Response> Do(Request productViewModel)
+        public async Task<Response> DoAsync(Request productViewModel)
         {
             var product = new Product()
             {
@@ -24,9 +23,10 @@ namespace Shop.Application.ProductsAdmin
                 Value = Utils.GetDecimal(productViewModel.Value)
             };
 
-            _context.Products.Add(product);
+            var success = await _productManager.CreateProductAsync(product);
 
-            await _context.SaveChangesAsync();
+            if (!success) throw new System.Exception("Couldn't create a product.");
+
             return new Response
             {
                 Id = product.Id,
@@ -38,16 +38,8 @@ namespace Shop.Application.ProductsAdmin
 
         public class Request
         {
-            [Required]
-            [StringLength(30)]
             public string Name { get; set; }
-            [Required]
-            [StringLength(130)]
             public string Description { get; set; }
-
-            [RegularExpression(@"\d+([,\.]\d+)?", ErrorMessage = "This price fromat is not supported.")]
-            [Required]
-            [StringLength(30)]
             public string Value { get; set; }
 
         }

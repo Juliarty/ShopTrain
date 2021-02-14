@@ -34,6 +34,9 @@
                 })
                 .catch(err => {
                     console.log(err);
+                    if (err.response) {
+                        console.log(err.response.data);
+                    }
                 })
                 .then(() => {
                     this.loading = false;
@@ -51,6 +54,9 @@
                 })
                 .catch(err => {
                     console.log(err);
+                    if (err.response) {
+                        console.log(err.response.data);
+                    }
                 })
                 .then(() => {
                     this.loading = false;
@@ -67,9 +73,13 @@
                     this.cartItems = [];
                     this.getCart();
                     this.updateSmallCart();
+
                 })
                 .catch(err => {
                     console.log(err);
+                    if (err.response) {
+                        console.log(err.response.data);
+                    }
                 })
                 .then(() => {
                     this.loading = false;
@@ -86,6 +96,9 @@
                 })
                 .catch(err => {
                     console.log(err);
+                    if (err.response) {
+                        console.log(err.response.data);
+                    }
                 })
                 .then(() => {
                     this.loading = false;

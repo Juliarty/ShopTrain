@@ -1,22 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore.SqlServer;
 using Shop.Database;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Microsoft.AspNetCore.Identity;
-using Shop.Application.Users;
 using Shop.Application;
 using Shop.Domain.Infrastructure;
 using Shop.UI.Infrastructure;
+using FluentValidation.AspNetCore;
 
 namespace Shop.UI
 {
@@ -63,6 +58,7 @@ namespace Shop.UI
             {
                 options.LoginPath = "/Accounts/Login/";
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "Admin"));
@@ -84,17 +80,23 @@ namespace Shop.UI
                 options.SuppressXFrameOptionsHeader = false;
             });
 
-            services.AddRazorPages()
+            services
+                .AddRazorPages()
                 .AddXmlSerializerFormatters()
-                .AddRazorPagesOptions(options => 
+                .AddRazorPagesOptions(options =>
                 {
                     options.Conventions.AuthorizeFolder("/Admin");
                     options.Conventions.AuthorizePage("/Admin/ConfigureUsers", "Admin");
                 });
+
+            services
+                .AddMvc()
+                .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(typeof(Startup).Assembly));
+
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
-            services.AddScoped<ISessionManager, SessionManager>();
-            services.AddTransient<IStockManager, StockManager>();
+            
+
             services.AddApplicationServices();
             services.AddHttpContextAccessor();
         }

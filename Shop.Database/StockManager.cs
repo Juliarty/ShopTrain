@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Shop.UI.Infrastructure
+namespace Shop.Domain.Infrastructure
 {
 
     public class StockManager : IStockManager
@@ -18,11 +18,31 @@ namespace Shop.UI.Infrastructure
             _ctx = ctx;
         }
 
+        public async Task<bool> CreateStockAsync(Stock stock)
+        {
+            _ctx.Stock.Add(stock);
+            return await _ctx.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> RemoveStockAsync(int stockId)
+        {
+            var stock = _ctx.Stock.FirstOrDefault(x => x.Id == stockId);
+            _ctx.Stock.Remove(stock);
+            return await _ctx.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateStockRangeAsync(IEnumerable<Stock> stocks)
+        {
+            _ctx.Stock.UpdateRange(stocks);
+            return await _ctx.SaveChangesAsync() > 0;
+        }
+
+   
         public bool EnoughStock(int stockId, int qty)
         {
             var stock = _ctx.Stock.FirstOrDefault(x => x.Id == stockId);
 
-            return stock == null? false: stock.Qty >= qty;
+            return stock == null ? false : stock.Qty >= qty;
         }
 
         public Stock GetStockWithProduct(int stockId)
@@ -99,5 +119,41 @@ namespace Shop.UI.Infrastructure
 
             return;
         }
+
+        public async Task ReleaseStockOnHoldAsync(string sessionId)
+        {
+            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == sessionId).ToList();
+
+            _ctx.StocksOnHold.RemoveRange(stockOnHold);
+
+            await _ctx.SaveChangesAsync();
+        }
+
+
+        public async Task<bool> RetrieveExpiredStocksOnHoldAsync()
+        {
+            var expiredStocksOnHold = _ctx.StocksOnHold.Where(x => x.ExpiryTime < DateTime.Now).ToList();
+
+            if (expiredStocksOnHold.Count > 0)
+            {
+                foreach (var expiredStock in expiredStocksOnHold)
+                {
+                    var stock = _ctx.Stock.Where(x => expiredStock.StockId == x.Id).FirstOrDefault();
+                    stock.Qty += expiredStock.Qty;
+                }
+                _ctx.RemoveRange(expiredStocksOnHold);
+                await _ctx.SaveChangesAsync();
+            }
+
+            return true;
+        }
+
+
+        public IEnumerable<TResult> GetStocksForProduct<TResult>(int productId, Func<Stock, TResult> selector) =>
+            _ctx.Stock
+            .Include(x => x.Product)
+            .Where(x => x.Product.Id == productId)
+            .Select(selector);
+            
     }
 }

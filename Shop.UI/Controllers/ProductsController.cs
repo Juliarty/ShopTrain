@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shop.Application.ProductsAdmin;
-using Shop.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Shop.Application.ProductsAdmin;
 
 namespace Shop.UI.Controllers
 {
@@ -13,27 +9,23 @@ namespace Shop.UI.Controllers
     [Authorize(Policy ="Manager")]
     public class ProductsController: Controller
     {
-        private readonly ApplicationDbContext _ctx;
-
-        public ProductsController(ApplicationDbContext ctx)
-        {
-            _ctx = ctx;
-        }
-
         [HttpGet("")]
-        public IActionResult GetProducts() => Ok(new GetProducts(_ctx).Do());
+        public IActionResult GetProducts([FromServices] GetProducts getProducts) => Ok(getProducts.Do());
 
         [HttpGet("{id}")]
-        public IActionResult GetProducts(int id) => Ok(new GetProduct(_ctx).Do(id));
+        public IActionResult GetProducts(int id, [FromServices] GetProduct getProduct) => Ok(getProduct.Do(id));
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateProduct([FromBody] CreateProduct.Request vm) => Ok(await new CreateProduct(_ctx).Do(vm));
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProduct.Request vm, 
+            [FromServices] CreateProduct createProduct) => Ok(await createProduct.DoAsync(vm));
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id) => Ok(await new DeleteProduct(_ctx).Do(id));
+        public async Task<IActionResult> DeleteProduct(int id, [FromServices] DeleteProduct deleteProduct) => 
+            Ok(await deleteProduct.Do(id));
 
         [HttpPut("")]
-        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct.Request request) => Ok(await new UpdateProduct(_ctx).Do(request));
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct.Request request,
+            [FromServices] UpdateProduct updateProduct) => Ok(await updateProduct.Do(request));
 
 
     }

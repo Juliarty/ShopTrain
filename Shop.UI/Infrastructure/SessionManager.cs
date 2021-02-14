@@ -50,6 +50,12 @@ namespace Shop.UI.Infrastructure
             var stringObject = JsonConvert.SerializeObject(customerInformation);
             _session.SetString(_customerInfoCookieName, stringObject);
         }
+
+
+        public void ClearCart()
+        {
+            _session.Remove(_cartCookieName);
+        }
         #endregion
     }
 }

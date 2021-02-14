@@ -1,57 +1,49 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shop.Database;
-using Shop.Domain.Enums;
+﻿using Shop.Domain.Enums;
+using Shop.Domain.Infrastructure;
+using Shop.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Shop.Application.OrdersAdmin
 {
+    [Service]
     public class GetOrder
     {
-        private ApplicationDbContext _ctx;
+        private IOrderManager _orderManger;
 
-        public GetOrder(ApplicationDbContext ctx)
+        public GetOrder(IOrderManager orderManger)
         {
-            _ctx = ctx;
+            _orderManger = orderManger;
         }
 
-        public Response Do(int id)
-        {
-            var response = _ctx.Orders
-                .Where(x => x.Id == id)
-                .Include(x => x.OrderStocks)
-                .ThenInclude(x => x.Stock)
-                .ThenInclude(x => x.Product)
-                .Select(x => new Response()
-                {
-                    Id = x.Id,
-                    OrderRef = x.OrderRef,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
-                    City = x.City,
-                    PostCode = x.PostCode,
-                    OrderStatus = x.OrderStatus,
-                    Products = x.OrderStocks.Select(y => new Product
-                    {
-                        Name = y.Stock.Product.Name,
-                        Description = y.Stock.Product.Description,
-                        Value = $"${y.Stock.Product.Value:N2}",
-                        Qty = y.Qty,
-                        StockDescription = y.Stock.Description,
-                        OverallValue = $"${y.Stock.Product.Value * y.Qty:N2}"
-                    }),
-                    TotalValue = $"${x.OrderStocks.Sum(y => y.Stock.Product.Value * y.Qty):N2}"
-                })
-                .FirstOrDefault();
+        public Response Do(int orderId) => _orderManger.GetOrderById(orderId, _projection);
 
-            return response;
-        }
+
+        private static Func<Order, Response> _projection = (order) => new Response()
+        {
+            Id = order.Id,
+            OrderRef = order.OrderRef,
+            FirstName = order.FirstName,
+            LastName = order.LastName,
+            Email = order.Email,
+            PhoneNumber = order.PhoneNumber,
+            Address1 = order.Address1,
+            Address2 = order.Address2,
+            City = order.City,
+            PostCode = order.PostCode,
+            OrderStatus = order.OrderStatus,
+            Products = order.OrderStocks.Select(y => new Product
+            {
+                Name = y.Stock.Product.Name,
+                Description = y.Stock.Product.Description,
+                Value = $"${y.Stock.Product.Value:N2}",
+                Qty = y.Qty,
+                StockDescription = y.Stock.Description,
+                OverallValue = $"${y.Stock.Product.Value * y.Qty:N2}"
+            }),
+            TotalValue = $"${order.OrderStocks.Sum(y => y.Stock.Product.Value * y.Qty):N2}"
+        };
 
         public class Response
         {

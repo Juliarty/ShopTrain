@@ -1,39 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shop.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using Shop.Domain.Enums;
 using System.Threading.Tasks;
+using Shop.Domain.Infrastructure;
 
 namespace Shop.Application.OrdersAdmin
 {
+    [Service]
     public class UpdateOrder
     {
 
-        private ApplicationDbContext _ctx;
+        private IOrderManager _orderManager;
 
-        public UpdateOrder(ApplicationDbContext ctx)
+        public UpdateOrder(IOrderManager orderManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
         }
 
         public async Task<bool> DoAsync(int orderId)
         {
-            var order = _ctx.Orders
-                .FirstOrDefault(x => x.Id == orderId);
+            var order = _orderManager.GetOrderById(orderId, x => x);
 
-            if (order == null) return true;
-
+            OrderStatus newStatus;
             switch (order.OrderStatus)
             {
-                case OrderStatus.Pending: order.OrderStatus = OrderStatus.Packed; break;
-                case OrderStatus.Packed: order.OrderStatus = OrderStatus.Shipped; break;
-                case OrderStatus.Shipped: order.OrderStatus = OrderStatus.Done; break;
+                case OrderStatus.Pending: newStatus = OrderStatus.Packed; break;
+                case OrderStatus.Packed: newStatus = OrderStatus.Shipped; break;
+                case OrderStatus.Shipped: newStatus = OrderStatus.Done; break;
+                case OrderStatus.Done: return true;
+                default: throw new Exception($"Unexpected order status {Enum.GetName(typeof(OrderStatus), order.OrderStatus)}");
             }
 
-            return await _ctx.SaveChangesAsync() > 0;
+            return await _orderManager.UpdateOrderStatus(orderId, newStatus);
         }
 
     }

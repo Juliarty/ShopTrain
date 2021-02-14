@@ -1,31 +1,25 @@
-﻿using Shop.Database;
-using System;
-using System.Collections;
+﻿using Shop.Domain.Infrastructure;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace Shop.Application.ProductsAdmin
 {
+    [Service]
     public class GetProducts
     {
-        private ApplicationDbContext _context;
+        private readonly IProductManager _productManager;
 
-        public GetProducts(ApplicationDbContext context)
+        public GetProducts(IProductManager productManager)
         {
-            _context = context;
+            _productManager = productManager;
         }
 
-        public IEnumerable<Response> Do() =>
-            _context.Products
-            .Select(x => new Response
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Description = x.Description,
-                ValueInRubles = x.Value
-            })
-            .ToList();
+        public IEnumerable<Response> Do() => _productManager.GetProducts(x => true, x => new Response
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Description = x.Description,
+            ValueInRubles = x.Value
+        });
 
         public class Response
         {

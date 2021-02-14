@@ -1,57 +1,48 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shop.Database;
-using Shop.Domain.Enums;
+﻿using Shop.Domain.Enums;
+using Shop.Domain.Infrastructure;
+using Shop.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Shop.Application.Orders
 {
+    [Service]
     public class GetOrder
     {
-        private ApplicationDbContext _ctx;
+        private IOrderManager _orderManager;
 
-        public GetOrder(ApplicationDbContext ctx)
+        public GetOrder(IOrderManager orderManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
         }
 
-        public Response Do(string orderRef)
-        {
-            var response = _ctx.Orders
-                .Where(x => x.OrderRef == orderRef)
-                .Include(x => x.OrderStocks)
-                .ThenInclude(x => x.Stock)
-                .ThenInclude(x => x.Product)
-                .Select(x => new Response()
+        public Response Do(string orderRef) => _orderManager.GetOrderByReference(orderRef, _projection);
+       
+        private static Func<Order, Response> _projection = (order) => new Response()
+            {
+                OrderRef = order.OrderRef,
+                FirstName = order.FirstName,
+                LastName = order.LastName,
+                Email = order.Email,
+                PhoneNumber = order.PhoneNumber,
+                Address1 = order.Address1,
+                Address2 = order.Address2,
+                City = order.City,
+                PostCode = order.PostCode,
+                OrderStatus = order.OrderStatus,
+                Products = order.OrderStocks.Select(y => new Product
                 {
-                    OrderRef = x.OrderRef,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
-                    City = x.City,
-                    PostCode = x.PostCode,
-                    OrderStatus = x.OrderStatus,
-                    Products = x.OrderStocks.Select(y => new Product
-                    {
-                        Name = y.Stock.Product.Name,
-                        Description = y.Stock.Product.Description,
-                        Value = $"${y.Stock.Product.Value:N2}",
-                        Qty = y.Qty,
-                        StockDescription = y.Stock.Description,
-                        OverallValue = $"${y.Stock.Product.Value * y.Qty:N2}"
-                    }),
-                    TotalValue = $"${x.OrderStocks.Sum(y => y.Stock.Product.Value * y.Qty):N2}"
-                })
-                .FirstOrDefault();
-
-            return response;
-        }
-
+                    Name = y.Stock.Product.Name,
+                    Description = y.Stock.Product.Description,
+                    Value = $"${y.Stock.Product.Value:N2}",
+                    Qty = y.Qty,
+                    StockDescription = y.Stock.Description,
+                    OverallValue = $"${y.Stock.Product.Value * y.Qty:N2}"
+                }),
+                TotalValue = $"${order.OrderStocks.Sum(y => y.Stock.Product.Value * y.Qty):N2}"
+            };
+        
         public class Response
         {
             public string OrderRef { get; set; }
@@ -68,6 +59,7 @@ namespace Shop.Application.Orders
             public IEnumerable<Product> Products { get; set; }
             public string TotalValue { get; set; }
         }
+        
         public class Product
         {
             public string Name { get; set; }

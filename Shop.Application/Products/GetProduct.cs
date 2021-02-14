@@ -1,41 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shop.Database;
-using System;
+﻿using Shop.Domain.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shop.Application.Products
 {
+    [Service]
     public class GetProduct
     {
-        private ApplicationDbContext _ctx;
+        private IProductManager _productManager;
+        private IStockManager _stockManager;
 
-        public GetProduct(ApplicationDbContext context)
+        public GetProduct(IProductManager productManager, IStockManager stockManager)
         {
-            _ctx = context;
+            _productManager = productManager;
+            _stockManager = stockManager;
         }
 
-        public async Task<Response> DoAsync(string name)
+        public async Task<Response> DoAsync(int id)
         {
-            await new RemoveExpiredStocksOnHold(_ctx).DoAsync();
+            await _stockManager.RetrieveExpiredStocksOnHoldAsync();
 
-            return _ctx.Products.Where(x => x.Name == name)
-                .Include(x => x.Stock)
-                .Select(x => new Response
+            return _productManager.GetProductById(id, x => new Response
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                ValueInRubles = x.Value,
+                Stock = x.Stock.Select(y => new StockViewModel
                 {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    ValueInRubles = x.Value,
-                    Stock = x.Stock.Select(y => new StockViewModel
-                    {
-                        Id = y.Id,
-                        Description = y.Description,
-                        Qty = y.Qty
-                    }).ToList()
-                }).FirstOrDefault();
+                    Id = y.Id,
+                    Description = y.Description,
+                    Qty = y.Qty
+                }).ToList()
+            });
         }
         
         

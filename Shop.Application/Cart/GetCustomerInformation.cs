@@ -1,11 +1,8 @@
 ﻿using Shop.Domain.Infrastructure;
-using Shop.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shop.Application.Cart
 {
+    [Service]
     public class GetCustomerInformation
     {
         private ISessionManager _sessionManager;

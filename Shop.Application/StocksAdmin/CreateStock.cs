@@ -1,18 +1,18 @@
-﻿using Shop.Database;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using Shop.Domain.Models;
-namespace Shop.Application.StockAdmin
+using Shop.Domain.Infrastructure;
+
+namespace Shop.Application.StocksAdmin
 {
+    [Service]
     public class CreateStock
     {
-        private ApplicationDbContext _ctx;
+        private readonly IStockManager _stockManager;
 
-        public CreateStock(ApplicationDbContext ctx)
+        public CreateStock(IStockManager stockManager)
         {
-            _ctx = ctx;
+            _stockManager = stockManager;
         }
 
         public async Task<Response> Do(Request request)
@@ -24,9 +24,9 @@ namespace Shop.Application.StockAdmin
                 Qty = request.Qty
             };
 
-            _ctx.Stock.Add(stock);
+            var success = await _stockManager.CreateStockAsync(stock);
 
-            await _ctx.SaveChangesAsync();
+            if (!success) throw new Exception("Couldn't create a stock.");
 
             return new Response()
             {

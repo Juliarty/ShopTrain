@@ -19,9 +19,9 @@ namespace Shop.UI.Pages
         [BindProperty]
         public GetProduct.Response Product { get; set; }
 
-        public async Task OnGetAsync(string name, [FromServices] GetProduct getProduct)
+        public async Task OnGetAsync(int productId, [FromServices] GetProduct getProduct)
         {
-            Product = await getProduct.DoAsync(name.Replace("-", " "));
+            Product = await getProduct.DoAsync(productId);
         }
         public async Task<IActionResult> OnPostAsync([FromServices] AddToCart addToCart)
         {

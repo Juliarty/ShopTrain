@@ -18,16 +18,18 @@ namespace Shop.UI.Checkout
     {
         public string PublicKey { get; }
 
-        private ApplicationDbContext _ctx;
-        private ISessionManager _sessionManager;
+        private readonly IOrderManager _orderManager;
+        private readonly IStockManager _stockManager;
+        private readonly ISessionManager _sessionManager;
 
         [BindProperty]
         public Application.Cart.GetOrder.Response CartOrder { get; set; }
-        public PaymentModel(IConfiguration config, ApplicationDbContext context, ISessionManager sessionManager)
+        public PaymentModel(IConfiguration config, IOrderManager orderManager, ISessionManager sessionManager, IStockManager stockManager)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
-            _ctx = context;
+            _orderManager = orderManager;
             _sessionManager = sessionManager;
+            _stockManager = stockManager;
         }
 
 
@@ -50,7 +52,7 @@ namespace Shop.UI.Checkout
             var cartOrder = new Application.Cart.GetOrder(_sessionManager).Do();
 
 
-            await new CreateOrder(_ctx).Do(new CreateOrder.Request()
+            await new CreateOrder(_orderManager, _stockManager).Do(new CreateOrder.Request()
             {
                 //ToDo: change stripeReference
                 StripeReference = "Charge.Id",
@@ -67,6 +69,7 @@ namespace Shop.UI.Checkout
                 
             });
 
+            _sessionManager.ClearCart();
             return RedirectToPage("/Index");
         }
     }
